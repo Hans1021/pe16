@@ -1,0 +1,52 @@
+; Modbus RTU transmitter (8E1). TX = pin 0, RS-485 driver enable = pin 2 (DE high while sending).
+; cfg: poly 0x8005 crcw 15 osr_lsb 1 (CRC-16/MODBUS, fed in line order, sent low byte first).
+; Even parity is tracked in the program counter: the E and O copies of the bit loop.
+; Host: (number of data bytes + 1), then one data byte per word. The engine appends the CRC and
+; keeps the line silent for 3.5 characters (at least 1.75 ms above 19200 baud) after each frame.
+.equ T {bit(115200)}
+.equ G {max(us(1750), 385 * T // 10) // 24 + 1}
+        set pins 0x01
+        set oes 0x05
+top:    pull
+        mov y osr            ; data bytes + 1 (y = bytes still to send after this one)
+        set ctl sync crc1
+        set pin 2 1          ; DE on
+        pull
+byte:   dly {T}
+        set pin 0 0          ; start bit
+        set x 7
+bE:     dly {T}
+        out crc 0            ; data bit, LSB first; b = bit
+        jmp b oE
+        jmp x-- bE
+        jmp pE
+oE:     jmp x-- bO
+        jmp pO
+bO:     dly {T}
+        out crc 0
+        jmp b oO
+        jmp x-- bO
+        jmp pO
+oO:     jmp x-- bE
+        jmp pE
+pE:     dly {T}
+        set pin 0 0          ; even number of ones so far: parity 0
+        jmp stop
+pO:     dly {T}
+        set pin 0 1
+stop:   dly {T}
+        set pin 0 1          ; stop bit
+        jmp y-- nxt
+        dly {T}
+        set pin 2 0          ; DE off after the last stop bit
+        set x 23
+gap:    dly {G}              ; 24 x G >= t3.5
+        jmp x-- gap
+        jmp top
+nxt:    jmp y0 byte          ; y = 0: CRC high byte, already in OSR
+        set x 1
+        jmp x!=y data
+        mov osr crc@         ; y = 1: CRC low byte next (bit-reversed register = CRC-16/MODBUS)
+        jmp byte
+data:   pull
+        jmp byte

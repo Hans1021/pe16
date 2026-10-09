@@ -1,0 +1,10 @@
+; PS/2 receive (device drives CLK=0 and DATA=1). cfg isr_lsb=1.
+; Samples DATA on each CLK falling edge. Pushes 11 bits in [15:5]: start, d0..d7, parity, stop.
+top:    set ctl isr0
+        set x 10
+bit:    wait 1 0
+        wait 0 0
+        in raw 1
+        jmp x-- bit
+        push
+        jmp top

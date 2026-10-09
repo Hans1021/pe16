@@ -1,0 +1,32 @@
+; LIN master frame on pin 0 (TXD), 19200 baud, 8N1.
+; Break 13 bits low, delimiter 1 bit, then bytes (host supplies 0x55 sync, PID, data, checksum).
+; cfg osr_lsb=1. Host: (nbytes-1), then one byte per word.
+.equ T {bit(19200)}
+        set oe 0 1
+        set pin 0 1
+top:    pull
+        mov y osr
+        pull
+        set ctl sync
+        set pin 0 0          ; break
+        set x 11
+brk:    dly {T}
+        jmp x-- brk
+        dly {T}             ; 13th break bit, so the edge below is 1 cycle after a DLY
+        set pin 0 1          ; delimiter
+        dly {T}
+        set pin 0 0          ; start bit
+        set x 7
+bit:    dly {T}
+        out raw 0
+        jmp x-- bit
+        dly {T}
+        set pin 0 1          ; stop bit
+        jmp y-- nxt
+        dly {T}
+        jmp top
+nxt:    pull
+        dly {T}
+        set pin 0 0
+        set x 7
+        jmp bit

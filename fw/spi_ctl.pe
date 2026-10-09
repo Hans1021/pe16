@@ -1,0 +1,21 @@
+; SPI controller, mode 0, MSB-first. SCK=2 MOSI=3 MISO=4 CS=5. Half period = 8 clocks.
+; Host pushes byte in bits [15:8]; RX word bits [7:0] = received byte (cfg osr_lsb=0 isr_lsb=0).
+        set pins 0x20        ; CS high, SCK low
+        set oes 0x2C
+top:    pull
+        set ctl sync isr0
+        set pin 5 0          ; CS low
+        set x 7
+bit:    dly 8
+        set pin 2 0          ; SCK fall
+        out raw 3            ; MOSI
+        dly 8
+        set pin 2 1          ; SCK rise
+        in raw 4             ; MISO
+        jmp x-- bit
+        dly 8
+        set pin 2 0
+        dly 8
+        set pin 5 1          ; CS high
+        push
+        jmp top

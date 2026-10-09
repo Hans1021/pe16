@@ -1,0 +1,70 @@
+; SWD read transaction. SWCLK=0 SWDIO=1. cfg osr_lsb=1 isr_lsb=1. Half period 8.
+; Host: word0 = line-reset ones minus 1 (0 = no line reset), word1 = request byte.
+; Pushes three words: 16 bits, 16 bits, 4 bits in [15:12]. Bit stream = ACK[2:0], DATA[31:0], parity.
+        set pins 0
+        set oes 0x03
+top:    pull
+        mov x osr
+        set ctl sync isr0
+        set oe 1 1
+        jmp x0 idl0
+lr:     set pin 1 1
+        dly 8
+        set pin 0 1
+        dly 8
+        set pin 0 0
+        jmp x-- lr
+idl0:   set pin 1 0
+        set x 1
+idl:    dly 8
+        set pin 0 1
+        dly 8
+        set pin 0 0
+        jmp x-- idl
+        pull
+        set x 7
+rq:     out raw 1
+        dly 8
+        set pin 0 1
+        dly 8
+        set pin 0 0
+        jmp x-- rq
+        set oe 1 0           ; turnaround
+        dly 8
+        set pin 0 1
+        dly 8
+        set pin 0 0
+        set x 15
+r1:     dly 8
+        in raw 1
+        set pin 0 1
+        dly 8
+        set pin 0 0
+        jmp x-- r1
+        push
+        set x 15
+r2:     dly 8
+        in raw 1
+        set pin 0 1
+        dly 8
+        set pin 0 0
+        jmp x-- r2
+        push
+        set ctl isr0
+        set x 3
+r3:     dly 8
+        in raw 1
+        set pin 0 1
+        dly 8
+        set pin 0 0
+        jmp x-- r3
+        push
+        set pin 1 0
+        set oe 1 1           ; host drives again
+        set x 7
+idl2:   dly 8
+        set pin 0 1
+        dly 8
+        set pin 0 0
+        jmp x-- idl2
+        jmp top

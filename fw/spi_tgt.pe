@@ -1,0 +1,17 @@
+; SPI target, mode 0, MSB first. SCK=2 MOSI=3 MISO=4 CS=5. cfg osr_lsb=0 isr_lsb=0.
+; Host pushes the reply byte in bits [15:8]; RX word bits [7:0] = byte received.
+; SCK half period must exceed about 5 system clocks.
+        set oe 4 1
+top:    pull
+        set ctl isr0
+        wait 0 5
+        set x 7
+        out raw 4
+bit:    wait 1 2
+        in raw 3
+        wait 0 2
+        out raw 4
+        jmp x-- bit
+        push
+        wait 1 5
+        jmp top

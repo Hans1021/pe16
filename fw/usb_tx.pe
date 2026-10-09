@@ -1,0 +1,48 @@
+; USB low-speed packet transmitter. D- = pin 2, D+ = pin 3 (cfg diff drives D+ = not D-).
+; cfg nrzi=1 diff=1 osr_lsb=1 stuff_n=6 stuff_ones=1; CRC16: poly 0x8005 crcw 15, CRC5: poly 0x05 crcw 4.
+; 1.5 Mb/s: 32 clocks per bit at 48 MHz.
+; Host: {PID, SYNC=0x80}, number of payload bits n (0 allowed), payload words LSB first,
+; then CRC bits minus one (15 or 4). Idle J = D- high.
+.equ T {bit(1500000)}
+        set pins 0x04
+        set oes 0x0C
+top:    pull
+        set ctl sync stf
+        set x 15
+sp:     dly {T}
+        out stuff 2
+        jmp s sp
+        jmp x-- sp
+        set ctl crc1
+        pull
+        mov x osr
+        jmp x0 crcf
+        jmp x-- dst
+dst:    pull
+        set y 15
+db:     dly {T}
+        out stuff 2
+        jmp s db
+        jmp x-- dm
+        jmp crcf
+dm:     jmp y-- db
+        pull
+        set y 15
+        jmp db
+crcf:   pull
+        mov x osr
+        mov osr ~crc^@       ; inverted CRC, highest-order bit first
+cb:     dly {T}
+        out stuff 2
+        jmp s cb
+        jmp x-- cb
+        jmp due cst
+        jmp eop
+cst:    dly {T}
+        out stuff 2          ; final stuff bit
+eop:    dly {T}
+        set pins 0x00        ; SE0 for two bits
+        dly {2 * T}
+        set pins 0x04        ; J
+        dly {T}
+        jmp top

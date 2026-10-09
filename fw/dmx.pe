@@ -1,0 +1,30 @@
+; DMX512 transmitter on pin 0: 250 kbaud, 8N2.
+; BREAK 90 us, MARK-AFTER-BREAK 12 us. cfg osr_lsb=1.
+; Host: (slots-1), then one byte per word (slot 0 = start code). Keep the FIFO fed.
+.equ T {bit(250000)}
+        set oe 0 1
+        set pin 0 1
+top:    pull
+        mov y osr
+        pull
+        set ctl sync
+        set pin 0 0          ; BREAK
+        dly {us(45)}
+        dly {us(45)}
+        set pin 0 1          ; MAB
+        dly {us(12)}
+        set pin 0 0          ; start bit
+        set x 7
+bit:    dly {T}
+        out raw 0
+        jmp x-- bit
+        dly {T}
+        set pin 0 1          ; 2 stop bits
+        jmp y-- nxt
+        dly {2 * T}
+        jmp top
+nxt:    pull
+        dly {2 * T}
+        set pin 0 0
+        set x 7
+        jmp bit

@@ -1,0 +1,102 @@
+; CAN 2.0A/B receiver: RXD = pin 7, TXD = pin 6 (drives the ACK slot). Bit rate 500 kb/s.
+; cfg poly=0x4599 crcw=14 isr_lsb=0 stuff_n=5 stuff_ones=0.
+; Pushes: 14 header bits (SOF..IDE); extended: 16 + 5 more bits; then r0 (std) or nothing;
+; then DLC word, one word per data byte, then status (0 = CRC good, frame ACKed).
+; Resynchronisation: when the stuffing unit reports a stuff bit is due, the next edge is known,
+; so the data and CRC loops wait for it and re-anchor the deadline timer (see docs/REPORT.md).
+.equ T {bit(500000)}
+        set oe 6 1
+        set pin 6 1
+top:    set ctl isr0 stf crc0
+        wait 1 7
+        wait 0 7             ; SOF edge
+        set ctl sync
+        dly {T // 2 - 3}     ; bit centre, less the 3-clock edge-detection latency
+        in destuff 7         ; SOF
+        set x 12             ; ID10..0, RTR/SRR, IDE
+h1:     dly {T}
+        in destuff 7
+        jmp s h1
+        jmp x-- h1
+        push                 ; 14 header bits
+        set ctl isr0
+        jmp b ext
+        set x 0              ; r0
+r0:     dly {T}
+        in destuff 7
+        jmp s r0
+        jmp x-- r0
+        jmp dlc
+ext:    set x 15             ; 18 ID bits + RTR + r1 + r0 = 21 bits: 16 + 5
+e1:     dly {T}
+        in destuff 7
+        jmp s e1
+        jmp x-- e1
+        push
+        set ctl isr0
+        set x 4
+e2:     dly {T}
+        in destuff 7
+        jmp s e2
+        jmp x-- e2
+        push
+dlc:    set ctl isr0
+        set x 3
+d1:     dly {T}
+        in destuff 7
+        jmp s d1
+        jmp x-- d1
+        mov y isr
+        push                 ; DLC
+        jmp y0 crcf
+byte:   set ctl isr0
+        set x 7
+bb:     dly {T}
+        in destuff 7
+        jmp s bb
+        jmp x-- bc
+        jmp bd
+bc:     jmp due bsy          ; a stuff bit comes next: its edge is known, so hard sync on it
+        jmp bb
+bsy:    jmp b bs1
+        wait 1 7             ; line dominant, the stuff bit is recessive
+        jmp bs2
+bs1:    wait 0 7
+bs2:    set ctl sync
+        dly {T // 2 - 3}
+        in destuff 7         ; the stuff bit itself
+        jmp bb
+bd:     push
+        jmp y-- chk
+chk:    jmp y0 crcf
+        jmp byte
+crcf:   set x 14
+c1:     dly {T}
+        in destuff 7
+        jmp s c1
+        jmp x-- cc
+        jmp cdn
+cc:     jmp due csy
+        jmp c1
+csy:    jmp b cs1
+        wait 1 7
+        jmp cs2
+cs1:    wait 0 7
+cs2:    set ctl sync
+        dly {T // 2 - 3}
+        in destuff 7
+        jmp c1
+cdn:    mov x crc            ; 0 when the CRC matches
+cd:     dly {T}
+        in destuff 7         ; CRC delimiter (or a trailing stuff bit)
+        jmp s cd
+        mov isr x
+        jmp x0 ack
+        push                 ; status: CRC residue, no ACK
+        jmp top
+ack:    dly {T // 2}
+        set pin 6 0          ; ACK slot dominant
+        dly {T}
+        set pin 6 1
+        push                 ; status 0
+        jmp top

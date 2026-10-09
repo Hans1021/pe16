@@ -1,0 +1,64 @@
+; MIL-STD-1553 word transmitter, 1 Mb/s Manchester II. TX+ = pin 0, TX- = pin 1 (both low = idle).
+; cfg osr_lsb 0 (MSB first). Odd parity is tracked in the program counter (E/O loop copies).
+; Host: (number of words - 1), then the words. The first word gets a command/status sync
+; (+1.5 bit, -1.5 bit), the rest get data syncs (-, +). Words are sent back to back.
+.equ H {ns(500)}
+        set pins 0
+        set oes 0x03
+top:    pull
+        mov y osr
+        pull
+        set ctl sync
+        set pins 0x01        ; command/status sync
+        dly {3 * H}
+        set pins 0x02
+        dly {2 * H}
+wd:     set x 15
+bE:     out raw 7            ; b = next bit (pin 7 scratch)
+        jmp b oneE
+        dly {H}
+        set pins 0x02        ; 0: - then +
+        dly {H}
+        set pins 0x01
+        jmp x-- bE
+        jmp parE
+oneE:   dly {H}
+        set pins 0x01        ; 1: + then -
+        dly {H}
+        set pins 0x02
+        jmp x-- bO
+        jmp parO
+bO:     out raw 7
+        jmp b oneO
+        dly {H}
+        set pins 0x02
+        dly {H}
+        set pins 0x01
+        jmp x-- bO
+        jmp parO
+oneO:   dly {H}
+        set pins 0x01
+        dly {H}
+        set pins 0x02
+        jmp x-- bE
+        jmp parE
+parE:   dly {H}
+        set pins 0x01        ; even ones so far: parity 1
+        dly {H}
+        set pins 0x02
+        jmp nxt
+parO:   dly {H}
+        set pins 0x02        ; parity 0
+        dly {H}
+        set pins 0x01
+nxt:    jmp y-- dsync
+        dly {H}
+        set pins 0x00        ; idle after the last word
+        jmp top
+dsync:  pull
+        dly {H}
+        set pins 0x02        ; data sync
+        dly {3 * H}
+        set pins 0x01
+        dly {2 * H}
+        jmp wd

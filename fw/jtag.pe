@@ -1,0 +1,26 @@
+; JTAG sequencer. TCK=0 TMS=1 TDI=2, TDO=3 input. cfg osr_lsb=0 isr_lsb=0. Half period 8.
+; Host: (nbits-1), then words of 8 {TMS,TDI} pairs MSB first. Pushes 8 TDO bits per word
+; (bits [7:0], first bit highest); the last push holds the remaining bits.
+        set pins 0
+        set oes 0x07
+top:    pull
+        mov x osr
+        pull
+        set y 7
+        set ctl sync isr0
+bit:    out raw 1
+        out raw 2
+        dly 8
+        set pin 0 1
+        in raw 3
+        dly 8
+        set pin 0 0
+        jmp x-- more
+        push
+        jmp top
+more:   jmp y-- bit
+        push
+        set ctl isr0
+        pull
+        set y 7
+        jmp bit

@@ -1,0 +1,67 @@
+; Modbus RTU receiver (8E1). RX = pin 1. cfg: poly 0x8005 crcw 15 isr_lsb 1.
+; Host first pushes the end-of-frame silence as a count of 16-clock polls (t3.5 / 16).
+; Pushes per character: {byte, 0xFF}. At end of frame: status word 0 = CRC good, 1 = CRC error.
+; A parity or framing error pushes status 2 and discards the rest of the frame.
+; The t1.5 inter-character limit is not checked.
+.equ T {bit(115200)}
+.equ P 16
+        pull                 ; OSR keeps the silence count
+top:    set ctl crc1
+        wait 1 1
+        wait 0 1             ; first start bit
+chr:    set ctl sync
+        mov isr ~null        ; data word low byte = 0xFF marks a character
+        dly {T // 2}
+        in peek 1
+        jmp b ferr           ; start bit not low at its centre
+        set x 7
+rE:     dly {T}
+        in crc 1
+        jmp b qO
+        jmp x-- rE
+        jmp pE
+qO:     jmp x-- rO
+        jmp pO
+rO:     dly {T}
+        in crc 1
+        jmp b qE
+        jmp x-- rO
+        jmp pO
+qE:     jmp x-- rE
+        jmp pE
+pE:     dly {T}
+        in peek 1            ; even so far: parity bit must be 0
+        jmp b ferr
+        jmp sb
+pO:     dly {T}
+        in peek 1
+        jmp b sb
+        jmp ferr
+sb:     dly {T}
+        in peek 1            ; stop bit must be 1
+        jmp b okc
+        jmp ferr
+okc:    push
+        mov y osr
+gp:     dly {P}
+        in peek 1
+        jmp b gi
+        jmp chr              ; next start bit
+gi:     jmp y-- gp
+        jmp cz good          ; silence reached: end of frame
+        set x 1
+        jmp fin
+good:   set x 0
+fin:    mov isr x
+        push
+        jmp top
+ferr:   set x 2
+        mov isr x
+        push
+        mov y osr
+pw:     dly {P}
+        in peek 1
+        jmp b pwi
+        mov y osr            ; line active: restart the silence timer
+pwi:    jmp y-- pw
+        jmp top

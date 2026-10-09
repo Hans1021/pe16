@@ -1,0 +1,60 @@
+== protocol suite [behavioural SRAM] NENG = 4
+ ** test.uart_tx PASS 37420.00 0.18 211613.33 **
+ ** test.uart_tx_period PASS 30640.00 0.16 191308.90 **
+ ** test.uart_rx PASS 38080.00 0.20 187618.09 **
+ ** test.spi_controller PASS 59300.00 0.33 181589.63 **
+ ** test.can_tx PASS 1170260.00 5.78 202332.86 **
+ ** test_protocols.i2c_controller PASS 280160.00 2.68 104497.43 **
+ ** test_protocols.i2c_target PASS 124400.00 1.01 123186.90 **
+ ** test_protocols.spi_target PASS 50540.00 0.44 114602.06 **
+ ** test_protocols.jtag_idcode PASS 65860.00 0.62 106075.14 **
+ ** test_protocols.swd_dpidr PASS 123100.00 1.14 108443.59 **
+ ** test_protocols.ps2_receive PASS 557040.00 4.18 133246.72 **
+ ** test_protocols.onewire PASS 1426940.00 14.70 97093.00 **
+ ** test_protocols.ws2812 PASS 81860.00 0.48 169238.45 **
+ ** test_protocols.dmx512 PASS 228100.00 1.30 175231.31 **
+ ** test_protocols.lin PASS 1696100.00 10.01 169503.93 **
+ ** test_protocols.mdio PASS 150140.00 1.36 110363.05 **
+ ** test_protocols.can_rx PASS 602140.00 4.11 146397.02 **
+ ** test_protocols.usb_tx PASS 331780.00 1.77 187802.43 **
+ ** test_protocols.usb_rx PASS 302900.00 1.60 189779.86 **
+ ** test_protocols.eth_manchester PASS 15507770.00 60.97 254345.37 **
+ ** test_multi.four_engines PASS 208630.00 1.21 172466.41 **
+ ** TESTS=21 PASS=21 FAIL=0 SKIP=0 23073160.02 114.24 201968.94 **
+1615860.00ns INFO cocotb.tb I2C SCL: min low 1.50 us, min high 1.10 us, max freq 384 kHz
+3963740.01ns INFO cocotb.tb 1-Wire low pulses (us): [6.0, 30.0, 60.0, 120.0, 480.1]; min recovery 10.0 us
+4045600.01ns INFO cocotb.tb WS2812: high widths [20, 39], periods [60]
+4273700.01ns INFO cocotb.tb DMX: break 90.00 us, MAB 12.00 us, slots [0, 18, 255, 128, 85]
+5969800.01ns INFO cocotb.tb LIN: break 13.00 bits, delimiter 1.00 bits, bytes ['0x55', '0x50', '0x12', '0x34', '0x69']
+6119940.01ns INFO cocotb.tb MDC: min high 208 ns, min low 208 ns, min period 417 ns
+22864530.02ns INFO cocotb.tb Manchester: 208 bits decoded; NLP width 5 clocks, spacing 16.000 ms
+== protocol suite [SRAM_MODEL=yes PDK_ROOT=/home/claude/ihp5] NENG = 4
+ ** test.uart_tx PASS 37420.00 0.23 159952.36 **
+ ** test.uart_tx_period PASS 30640.00 0.17 178444.59 **
+ ** test.uart_rx PASS 38080.00 0.21 185191.44 **
+ ** test.spi_controller PASS 59300.00 0.40 147106.50 **
+ ** test.can_tx PASS 1170260.00 6.37 183731.47 **
+ ** test_protocols.i2c_controller PASS 280160.00 2.83 99058.82 **
+ ** test_protocols.i2c_target PASS 124400.00 1.02 121898.76 **
+ ** test_protocols.spi_target PASS 50540.00 0.42 119200.18 **
+ ** test_protocols.jtag_idcode PASS 65860.00 0.63 104574.96 **
+ ** test_protocols.swd_dpidr PASS 123100.00 1.17 104916.11 **
+ ** test_protocols.ps2_receive PASS 557040.00 4.38 127268.09 **
+ ** test_protocols.onewire PASS 1426940.00 15.34 93040.35 **
+ ** test_protocols.ws2812 PASS 81860.00 0.53 154155.62 **
+ ** test_protocols.dmx512 PASS 228100.00 1.40 163409.69 **
+ ** test_protocols.lin PASS 1696100.00 10.41 162978.51 **
+ ** test_protocols.mdio PASS 150140.00 1.56 96510.83 **
+ ** test_protocols.can_rx PASS 602140.00 4.25 141631.34 **
+ ** test_protocols.usb_tx PASS 331780.00 1.75 189275.16 **
+ ** test_protocols.usb_rx PASS 302900.00 1.72 175645.17 **
+ ** test_protocols.eth_manchester PASS 15507770.00 65.81 235644.24 **
+ ** test_multi.four_engines PASS 208630.00 1.35 154549.46 **
+ ** TESTS=21 PASS=21 FAIL=0 SKIP=0 23073160.02 121.97 189172.43 **
+1615860.00ns INFO cocotb.tb I2C SCL: min low 1.50 us, min high 1.10 us, max freq 384 kHz
+3963740.01ns INFO cocotb.tb 1-Wire low pulses (us): [6.0, 30.0, 60.0, 120.0, 480.1]; min recovery 10.0 us
+4045600.01ns INFO cocotb.tb WS2812: high widths [20, 39], periods [60]
+4273700.01ns INFO cocotb.tb DMX: break 90.00 us, MAB 12.00 us, slots [0, 18, 255, 128, 85]
+5969800.01ns INFO cocotb.tb LIN: break 13.00 bits, delimiter 1.00 bits, bytes ['0x55', '0x50', '0x12', '0x34', '0x69']
+6119940.01ns INFO cocotb.tb MDC: min high 208 ns, min low 208 ns, min period 417 ns
+22864530.02ns INFO cocotb.tb Manchester: 208 bits decoded; NLP width 5 clocks, spacing 16.000 ms

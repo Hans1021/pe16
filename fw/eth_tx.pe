@@ -1,0 +1,43 @@
+; 10BASE-T style Manchester transmitter. TD+ = pin 0, TD- = pin 1. cfg osr_lsb=1.
+; Half-bit = 12 clocks, so 2 Mb/s at 48 MHz. Real 10BASE-T needs 2 clocks per half bit;
+; this loop needs 9 cycles on its longest path (the PULL at a word boundary). The host supplies the full frame including
+; preamble, SFD and FCS (the CRC unit is 16 bits wide). Idle: normal link pulses every 16 ms.
+; Host: (nbits-1), then frame words LSB first.
+        set pins 0x00
+        set oes 0x03
+idle:   set ctl sync
+        set pins 0x01        ; NLP: 100 ns high
+        dly {ns(100)}
+        set pins 0x00
+        set x 199
+nl:     dly {us(80)}          ; 200 x 80 us = 16 ms
+        jmp txe nw
+        jmp frame
+nw:     jmp x-- nl
+        jmp idle
+frame:  pull
+        mov x osr
+        pull
+        set y 15
+        set ctl sync
+bit:    out raw 7            ; b = bit
+        jmp b one
+        dly 12
+        set pins 0x01        ; 0: high then low
+        dly 12
+        set pins 0x02
+        jmp nx
+one:    dly 12
+        set pins 0x02        ; 1: low then high
+        dly 12
+        set pins 0x01
+nx:     jmp x-- more
+        dly 12
+        set pins 0x01        ; TP_IDL: hold high, then idle
+        dly 36
+        set pins 0x00
+        jmp idle
+more:   jmp y-- bit
+        pull
+        set y 15
+        jmp bit

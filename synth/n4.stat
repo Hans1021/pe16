@@ -1,0 +1,51 @@
+
+10. Printing statistics.
+
+=== tt_um_pe16 ===
+
+        +----------Local Count, excluding submodules.
+        |        +-Local Area, excluding submodules.
+        |        | 
+     7764        - wires
+    10386        - wire bits
+      383        - public wires
+     3005        - public wire bits
+        8        - ports
+       43        - port bits
+     8733 1.42E+05 cells
+        8        -   $scopeinfo
+        4        -   RM_IHPSG13_1P_256x16_c2_bm_bist
+      279 3.54E+03   sg13cmos5l_a21o_1
+     1027 9.32E+03   sg13cmos5l_a21oi_1
+      162 2.35E+03   sg13cmos5l_a221oi_1
+      741 8.04E+03   sg13cmos5l_a22oi_1
+      154  1.4E+03   sg13cmos5l_and2_1
+       50   635.04   sg13cmos5l_and3_1
+       24  348.365   sg13cmos5l_and4_1
+        1    7.258   sg13cmos5l_buf_1
+     1311 6.42E+04   sg13cmos5l_dfrbpq_1
+      320 1.74E+03   sg13cmos5l_inv_1
+      822 1.49E+04   sg13cmos5l_mux2_1
+       14  533.434   sg13cmos5l_mux4_1
+      809 5.87E+03   sg13cmos5l_nand2_1
+      223 2.02E+03   sg13cmos5l_nand2b_1
+      260  2358.72   sg13cmos5l_nand3_1
+       19  241.315   sg13cmos5l_nand3b_1
+       62  674.957   sg13cmos5l_nand4_1
+      508 3.69E+03   sg13cmos5l_nor2_1
+      268 2.43E+03   sg13cmos5l_nor2b_1
+      188 1.71E+03   sg13cmos5l_nor3_1
+       68  740.275   sg13cmos5l_nor4_1
+      938 8.51E+03   sg13cmos5l_o21ai_1
+       48  435.456   sg13cmos5l_or2_1
+       12   152.41   sg13cmos5l_or3_1
+       40  580.608   sg13cmos5l_or4_1
+      222 3.22E+03   sg13cmos5l_xnor2_1
+      151 2.19E+03   sg13cmos5l_xor2_1
+
+   Area for cell type $scopeinfo is unknown!
+   Area for cell type \RM_IHPSG13_1P_256x16_c2_bm_bist is unknown!
+
+   Chip area for module '\tt_um_pe16': 141878.028600
+     of which used for sequential elements: 64224.316800 (45.27%)
+

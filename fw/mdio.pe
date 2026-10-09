@@ -1,0 +1,72 @@
+; MDIO (Clause 22) station. MDC=0 MDIO=1. cfg osr_lsb=0 isr_lsb=0. MDC period at least 400 ns.
+; Host: header word {ST=01, OP, PHYAD, REGAD, TA=10}; for writes, then the data word.
+; Reads push the 16-bit register value.
+.equ H {ns(200)}
+        set pins 0x02
+        set oes 0x03
+top:    pull
+        mov y osr
+        set ctl sync isr0
+        set pin 1 1
+        set x 31
+pre:    dly {H}
+        set pin 0 0
+        dly {H}
+        set pin 0 1          ; preamble: 32 ones
+        jmp x-- pre
+        set x 13
+hd:     dly {H}
+        set pin 0 0
+        out raw 1
+        dly {H}
+        set pin 0 1
+        jmp x-- hd
+        mov osr y
+        out raw 7
+        out raw 7
+        out raw 7            ; b = OP[1] (1 = read)
+        jmp b rd
+        mov osr y
+        set x 13
+sk:     out raw 7
+        jmp x-- sk
+        set x 1
+ta:     dly {H}
+        set pin 0 0
+        out raw 1            ; TA = 10
+        dly {H}
+        set pin 0 1
+        jmp x-- ta
+        pull
+        set x 15
+wd:     dly {H}
+        set pin 0 0
+        out raw 1
+        dly {H}
+        set pin 0 1
+        jmp x-- wd
+        jmp end
+rd:     dly {H}
+        set pin 0 0
+        set oe 1 0           ; release MDIO for TA
+        dly {H}
+        set pin 0 1
+        dly {H}
+        set pin 0 0
+        dly {H}
+        set pin 0 1
+        set x 15
+rdd:    dly {H}
+        set pin 0 0
+        dly {H - 1}
+        in raw 1             ; sample just before MDC rises
+        dly 1
+        set pin 0 1
+        jmp x-- rdd
+        push
+end:    dly {H}
+        set pin 0 0
+        set pin 1 1
+        set oe 1 1
+        dly {H}
+        jmp top

@@ -1,0 +1,1791 @@
+
+ /----------------------------------------------------------------------------\
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |  Copyright (C) 2012 - 2026  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |  Distributed under an ISC-like license, type "license" to see terms        |
+ \----------------------------------------------------------------------------/
+ Yosys 0.69 (git sha1 9f75ca1f9, Release, Clang /workspace/YoWASP/yosys/wasi-sdk-33.0-x86_64-linux/share/cmake/../..//bin/clang++ 22.1.0)
+
+-- Running command `read_verilog -sv synth/sram_bb.v src/pe_imem.v src/pe_core.v src/project.v; chparam -set NENG 1 tt_um_pe16; synth -flatten -top tt_um_pe16; dfflibmap -liberty /home/claude/ihp5/ihp-sg13cmos5l/libs.ref/sg13cmos5l_stdcell/lib/sg13cmos5l_stdcell_typ_1p20V_25C.lib; abc -liberty /home/claude/ihp5/ihp-sg13cmos5l/libs.ref/sg13cmos5l_stdcell/lib/sg13cmos5l_stdcell_typ_1p20V_25C.lib -D 25000; opt_clean; tee -o synth/n1.stat stat -liberty /home/claude/ihp5/ihp-sg13cmos5l/libs.ref/sg13cmos5l_stdcell/lib/sg13cmos5l_stdcell_typ_1p20V_25C.lib' --
+
+1. Executing Verilog-2005 frontend: synth/sram_bb.v
+Parsing SystemVerilog input from `synth/sram_bb.v' to AST representation.
+Generating RTLIL representation for module `\RM_IHPSG13_1P_256x16_c2_bm_bist'.
+Successfully finished Verilog frontend.
+
+2. Executing Verilog-2005 frontend: src/pe_imem.v
+Parsing SystemVerilog input from `src/pe_imem.v' to AST representation.
+Generating RTLIL representation for module `\pe_imem'.
+Successfully finished Verilog frontend.
+
+3. Executing Verilog-2005 frontend: src/pe_core.v
+Parsing SystemVerilog input from `src/pe_core.v' to AST representation.
+Generating RTLIL representation for module `\pe_core'.
+Warning: Replacing memory \rxm with list of registers. See src/pe_core.v:152
+Warning: Replacing memory \txm with list of registers. See src/pe_core.v:149
+Successfully finished Verilog frontend.
+
+4. Executing Verilog-2005 frontend: src/project.v
+Parsing SystemVerilog input from `src/project.v' to AST representation.
+Generating RTLIL representation for module `\tt_um_pe16'.
+Successfully finished Verilog frontend.
+Parameter \NENG = 1
+
+5. Executing AST frontend in derive mode using pre-parsed AST for module `\tt_um_pe16'.
+Parameter \NENG = 1
+Generating RTLIL representation for module `$paramod\tt_um_pe16\NENG=s32'00000000000000000000000000000001'.
+
+6. Executing SYNTH pass.
+
+6.1. Executing HIERARCHY pass (managing design hierarchy).
+
+6.1.1. Analyzing design hierarchy..
+Top module:  \tt_um_pe16
+Used module:     \pe_imem
+Used module:     \pe_core
+
+6.1.2. Analyzing design hierarchy..
+Top module:  \tt_um_pe16
+Used module:     \pe_imem
+Used module:     \pe_core
+Removed 0 unused modules.
+
+6.2. Executing PROC pass (convert processes to netlists).
+
+6.2.1. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Cleaned up 0 empty switches.
+
+6.2.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
+Marked 1 switch rules as full_case in process $proc$src/project.v:22$541 in module tt_um_pe16.
+Marked 7 switch rules as full_case in process $proc$src/project.v:52$551 in module tt_um_pe16.
+Marked 1 switch rules as full_case in process $proc$src/project.v:104$588 in module tt_um_pe16.
+Marked 1 switch rules as full_case in process $proc$src/project.v:133$603 in module tt_um_pe16.
+Marked 1 switch rules as full_case in process $proc$src/project.v:134$606 in module tt_um_pe16.
+Marked 1 switch rules as full_case in process $proc$src/project.v:135$609 in module tt_um_pe16.
+Marked 1 switch rules as full_case in process $proc$src/project.v:135$612 in module tt_um_pe16.
+Removed 1 dead cases from process $proc$src/pe_core.v:50$415 in module pe_core.
+Marked 1 switch rules as full_case in process $proc$src/pe_core.v:50$415 in module pe_core.
+Removed 1 dead cases from process $proc$src/pe_core.v:138$130 in module pe_core.
+Marked 22 switch rules as full_case in process $proc$src/pe_core.v:138$130 in module pe_core.
+Marked 2 switch rules as full_case in process $proc$src/pe_core.v:118$88 in module pe_core.
+Marked 2 switch rules as full_case in process $proc$src/pe_core.v:108$74 in module pe_core.
+Marked 1 switch rules as full_case in process $proc$src/pe_core.v:91$44 in module pe_core.
+Removed a total of 2 dead cases.
+
+6.2.3. Executing PROC_PRUNE pass (remove redundant assignments in processes).
+Removed 13 redundant assignments.
+Promoted 76 assignments to connections.
+
+6.2.4. Executing PROC_INIT pass (extract init attributes).
+
+6.2.5. Executing PROC_ARST pass (detect async resets in processes).
+Found async reset \rst_n in `\tt_um_pe16.$proc$src/project.v:22$541'.
+Found async reset \rst_n in `\tt_um_pe16.$proc$src/project.v:52$551'.
+Found async reset \rst_n in `\tt_um_pe16.$proc$src/project.v:104$588'.
+Found async reset \rst_n in `\pe_core.$proc$src/pe_core.v:138$130'.
+
+6.2.6. Executing PROC_ROM pass (convert switches to ROMs).
+Converted 0 switches.
+<suppressed ~60 debug messages>
+
+6.2.7. Executing PROC_MUX pass (convert decision trees to multiplexers).
+Creating decoders for process `\tt_um_pe16.$proc$src/project.v:22$541'.
+     1/5: $0\pin_s2[7:0]
+     2/5: $0\pin_s1[7:0]
+     3/5: $0\mosi_s[2:0]
+     4/5: $0\cs_s[2:0]
+     5/5: $0\sck_s[2:0]
+Creating decoders for process `\tt_um_pe16.$proc$src/project.v:52$551'.
+     1/16: $0\st_tx[0:0]
+     2/16: $0\st_pop[0:0]
+     3/16: $0\st_cfg[0:0]
+     4/16: $0\st_imem[0:0]
+     5/16: $0\st_ctrl[0:0]
+     6/16: $0\st_word[15:0]
+     7/16: $0\miso[0:0]
+     8/16: $0\rd_sh[15:0]
+     9/16: $0\haddr[7:0]
+    10/16: $0\have_addr[0:0]
+    11/16: $0\sh16[15:0]
+    12/16: $0\sh8[7:0]
+    13/16: $0\wcnt[3:0]
+    14/16: $0\bcnt[2:0]
+    15/16: $0\cmd_ok[0:0]
+    16/16: $0\cmd[7:0]
+Creating decoders for process `\tt_um_pe16.$proc$src/project.v:140$580'.
+Creating decoders for process `\tt_um_pe16.$proc$src/project.v:104$588'.
+     1/4: $0\eng[0].srst[0:0]
+     2/4: $0\eng[0].run[0:0]
+     3/4: $0\eng[0].misc[11:0]
+     4/4: $0\eng[0].poly[15:0]
+Creating decoders for process `\tt_um_pe16.$proc$src/project.v:133$603'.
+     1/1: $1$mem2reg_rd$\e_rd$src/project.v:133$537_DATA[15:0]$605
+Creating decoders for process `\tt_um_pe16.$proc$src/project.v:134$606'.
+     1/1: $1$mem2reg_rd$\e_pc$src/project.v:134$538_DATA[7:0]$608
+Creating decoders for process `\tt_um_pe16.$proc$src/project.v:135$609'.
+     1/1: $1$mem2reg_rd$\e_txc$src/project.v:135$539_DATA[2:0]$611
+Creating decoders for process `\tt_um_pe16.$proc$src/project.v:135$612'.
+     1/1: $1$mem2reg_rd$\e_rxc$src/project.v:135$540_DATA[2:0]$614
+Creating decoders for process `\tt_um_pe16.$proc$src/project.v:124$615'.
+Creating decoders for process `\tt_um_pe16.$proc$src/project.v:124$616'.
+Creating decoders for process `\tt_um_pe16.$proc$src/project.v:125$617'.
+Creating decoders for process `\tt_um_pe16.$proc$src/project.v:126$618'.
+Creating decoders for process `\tt_um_pe16.$proc$src/project.v:126$619'.
+Creating decoders for process `\tt_um_pe16.$proc$src/project.v:126$620'.
+Creating decoders for process `\pe_core.$proc$src/pe_core.v:50$415'.
+     1/1: $1$mem2reg_rd$\rxm$src/pe_core.v:50$13_DATA[15:0]$417
+Creating decoders for process `\pe_core.$proc$src/pe_core.v:83$399'.
+Creating decoders for process `\pe_core.$proc$src/pe_core.v:82$383'.
+Creating decoders for process `\pe_core.$proc$src/pe_core.v:138$130'.
+     1/175: $9$lookahead\pout$129[7:0]$380
+     2/175: $8$lookahead\poe$128[7:0]$379
+     3/175: $8$lookahead\pout$129[7:0]$364
+     4/175: $6$bitselwrite$pos$src/pe_core.v:200$9[2:0]$361
+     5/175: $7$lookahead\poe$128[7:0]$363
+     6/175: $6$bitselwrite$pos$src/pe_core.v:201$10[2:0]$362
+     7/175: $8\run_next$func$src/pe_core.v:195$8.$result[2:0]$352
+     8/175: $8\run_next$func$src/pe_core.v:195$8.inc[2:0]$356
+     9/175: $8\run_next$func$src/pe_core.v:195$8.ones[0:0]$355
+    10/175: $8\run_next$func$src/pe_core.v:195$8.last_[0:0]$354
+    11/175: $8\run_next$func$src/pe_core.v:195$8.bit_[0:0]$353
+    12/175: $7\run_next$func$src/pe_core.v:195$8.inc[2:0]$348
+    13/175: $7\run_next$func$src/pe_core.v:195$8.ones[0:0]$347
+    14/175: $7\run_next$func$src/pe_core.v:195$8.last_[0:0]$346
+    15/175: $7\run_next$func$src/pe_core.v:195$8.bit_[0:0]$345
+    16/175: $7\run_next$func$src/pe_core.v:195$8.$result[2:0]$344
+    17/175: $6\run_next$func$src/pe_core.v:195$8.inc[2:0]$341
+    18/175: $6\run_next$func$src/pe_core.v:195$8.ones[0:0]$340
+    19/175: $6\run_next$func$src/pe_core.v:195$8.last_[0:0]$339
+    20/175: $6\run_next$func$src/pe_core.v:195$8.bit_[0:0]$338
+    21/175: $6\run_next$func$src/pe_core.v:195$8.$result[2:0]$337
+    22/175: $8\run_next$func$src/pe_core.v:180$7.$result[2:0]$326
+    23/175: $8\run_next$func$src/pe_core.v:180$7.inc[2:0]$330
+    24/175: $8\run_next$func$src/pe_core.v:180$7.ones[0:0]$329
+    25/175: $8\run_next$func$src/pe_core.v:180$7.last_[0:0]$328
+    26/175: $8\run_next$func$src/pe_core.v:180$7.bit_[0:0]$327
+    27/175: $7\run_next$func$src/pe_core.v:180$7.inc[2:0]$322
+    28/175: $7\run_next$func$src/pe_core.v:180$7.ones[0:0]$321
+    29/175: $7\run_next$func$src/pe_core.v:180$7.last_[0:0]$320
+    30/175: $7\run_next$func$src/pe_core.v:180$7.bit_[0:0]$319
+    31/175: $7\run_next$func$src/pe_core.v:180$7.$result[2:0]$318
+    32/175: $7$lookahead\pout$129[7:0]$307
+    33/175: $7$bitselwrite$pos$src/pe_core.v:173$6[2:0]$306
+    34/175: $6$lookahead\poe$128[7:0]$290
+    35/175: $6$bitselwrite$pos$src/pe_core.v:170$4[2:0]$282
+    36/175: $6$lookahead\pout$129[7:0]$291
+    37/175: $6\run_next$func$src/pe_core.v:180$7.inc[2:0]$289
+    38/175: $6\run_next$func$src/pe_core.v:180$7.ones[0:0]$288
+    39/175: $6\run_next$func$src/pe_core.v:180$7.last_[0:0]$287
+    40/175: $6\run_next$func$src/pe_core.v:180$7.bit_[0:0]$286
+    41/175: $6\run_next$func$src/pe_core.v:180$7.$result[2:0]$285
+    42/175: $6$bitselwrite$pos$src/pe_core.v:173$6[2:0]$284
+    43/175: $6$bitselwrite$pos$src/pe_core.v:172$5[2:0]$283
+    44/175: $5$lookahead\pout$129[7:0]$270
+    45/175: $5$lookahead\poe$128[7:0]$269
+    46/175: $5$bitselwrite$pos$src/pe_core.v:201$10[2:0]$268
+    47/175: $5$bitselwrite$pos$src/pe_core.v:200$9[2:0]$267
+    48/175: $5\run_next$func$src/pe_core.v:195$8.inc[2:0]$266
+    49/175: $5\run_next$func$src/pe_core.v:195$8.ones[0:0]$265
+    50/175: $5\run_next$func$src/pe_core.v:195$8.last_[0:0]$264
+    51/175: $5\run_next$func$src/pe_core.v:195$8.bit_[0:0]$263
+    52/175: $5\run_next$func$src/pe_core.v:195$8.$result[2:0]$262
+    53/175: $5\run_next$func$src/pe_core.v:180$7.inc[2:0]$261
+    54/175: $5\run_next$func$src/pe_core.v:180$7.ones[0:0]$260
+    55/175: $5\run_next$func$src/pe_core.v:180$7.last_[0:0]$259
+    56/175: $5\run_next$func$src/pe_core.v:180$7.bit_[0:0]$258
+    57/175: $5\run_next$func$src/pe_core.v:180$7.$result[2:0]$257
+    58/175: $5$bitselwrite$pos$src/pe_core.v:173$6[2:0]$256
+    59/175: $5$bitselwrite$pos$src/pe_core.v:172$5[2:0]$255
+    60/175: $5$bitselwrite$pos$src/pe_core.v:170$4[2:0]$254
+    61/175: $4$lookahead\pout$129[7:0]$253
+    62/175: $4$lookahead\poe$128[7:0]$252
+    63/175: $4$bitselwrite$pos$src/pe_core.v:201$10[2:0]$251
+    64/175: $4$bitselwrite$pos$src/pe_core.v:200$9[2:0]$250
+    65/175: $4\run_next$func$src/pe_core.v:195$8.inc[2:0]$249
+    66/175: $4\run_next$func$src/pe_core.v:195$8.ones[0:0]$248
+    67/175: $4\run_next$func$src/pe_core.v:195$8.last_[0:0]$247
+    68/175: $4\run_next$func$src/pe_core.v:195$8.bit_[0:0]$246
+    69/175: $4\run_next$func$src/pe_core.v:195$8.$result[2:0]$245
+    70/175: $4\run_next$func$src/pe_core.v:180$7.inc[2:0]$244
+    71/175: $4\run_next$func$src/pe_core.v:180$7.ones[0:0]$243
+    72/175: $4\run_next$func$src/pe_core.v:180$7.last_[0:0]$242
+    73/175: $4\run_next$func$src/pe_core.v:180$7.bit_[0:0]$241
+    74/175: $4\run_next$func$src/pe_core.v:180$7.$result[2:0]$240
+    75/175: $4$bitselwrite$pos$src/pe_core.v:173$6[2:0]$239
+    76/175: $4$bitselwrite$pos$src/pe_core.v:172$5[2:0]$238
+    77/175: $4$bitselwrite$pos$src/pe_core.v:170$4[2:0]$237
+    78/175: $3$lookahead\pout$129[7:0]$232
+    79/175: $3$lookahead\poe$128[7:0]$231
+    80/175: $3$bitselwrite$pos$src/pe_core.v:201$10[2:0]$230
+    81/175: $3$bitselwrite$pos$src/pe_core.v:200$9[2:0]$229
+    82/175: $3\run_next$func$src/pe_core.v:195$8.inc[2:0]$228
+    83/175: $3\run_next$func$src/pe_core.v:195$8.ones[0:0]$227
+    84/175: $3\run_next$func$src/pe_core.v:195$8.last_[0:0]$226
+    85/175: $3\run_next$func$src/pe_core.v:195$8.bit_[0:0]$225
+    86/175: $3\run_next$func$src/pe_core.v:195$8.$result[2:0]$224
+    87/175: $3\run_next$func$src/pe_core.v:180$7.inc[2:0]$223
+    88/175: $3\run_next$func$src/pe_core.v:180$7.ones[0:0]$222
+    89/175: $3\run_next$func$src/pe_core.v:180$7.last_[0:0]$221
+    90/175: $3\run_next$func$src/pe_core.v:180$7.bit_[0:0]$220
+    91/175: $3\run_next$func$src/pe_core.v:180$7.$result[2:0]$219
+    92/175: $3$bitselwrite$pos$src/pe_core.v:173$6[2:0]$218
+    93/175: $3$bitselwrite$pos$src/pe_core.v:172$5[2:0]$217
+    94/175: $3$bitselwrite$pos$src/pe_core.v:170$4[2:0]$216
+    95/175: $3$mem2reg_wr$\rxm$src/pe_core.v:152$16_ADDR[1:0]$209
+    96/175: $3$mem2reg_wr$\rxm$src/pe_core.v:152$16_DATA[15:0]$210
+    97/175: $4$mem2reg_rd$\txm$src/pe_core.v:151$15_DATA[15:0]$207
+    98/175: $3$mem2reg_rd$\txm$src/pe_core.v:151$15_DATA[15:0]$206
+    99/175: $3$mem2reg_rd$\txm$src/pe_core.v:151$15_ADDR[1:0]$205
+   100/175: $3$mem2reg_wr$\txm$src/pe_core.v:149$14_ADDR[1:0]$201
+   101/175: $3$mem2reg_wr$\txm$src/pe_core.v:149$14_DATA[15:0]$202
+   102/175: $0\rxc[2:0]
+   103/175: $0\txc[2:0]
+   104/175: $2$lookahead\poe$128[7:0]$199
+   105/175: $2$lookahead\pout$129[7:0]$200
+   106/175: $2$mem2reg_wr$\rxm$src/pe_core.v:152$16_DATA[15:0]$198
+   107/175: $2$mem2reg_wr$\rxm$src/pe_core.v:152$16_ADDR[1:0]$197
+   108/175: $2$mem2reg_rd$\txm$src/pe_core.v:151$15_DATA[15:0]$196
+   109/175: $2$mem2reg_rd$\txm$src/pe_core.v:151$15_ADDR[1:0]$195
+   110/175: $2$mem2reg_wr$\txm$src/pe_core.v:149$14_DATA[15:0]$194
+   111/175: $2$mem2reg_wr$\txm$src/pe_core.v:149$14_ADDR[1:0]$193
+   112/175: $2$bitselwrite$pos$src/pe_core.v:201$10[2:0]$192
+   113/175: $2$bitselwrite$pos$src/pe_core.v:200$9[2:0]$191
+   114/175: $2\run_next$func$src/pe_core.v:195$8.inc[2:0]$190
+   115/175: $2\run_next$func$src/pe_core.v:195$8.ones[0:0]$189
+   116/175: $2\run_next$func$src/pe_core.v:195$8.last_[0:0]$188
+   117/175: $2\run_next$func$src/pe_core.v:195$8.bit_[0:0]$187
+   118/175: $2\run_next$func$src/pe_core.v:195$8.$result[2:0]$186
+   119/175: $2\run_next$func$src/pe_core.v:180$7.inc[2:0]$185
+   120/175: $2\run_next$func$src/pe_core.v:180$7.ones[0:0]$184
+   121/175: $2\run_next$func$src/pe_core.v:180$7.last_[0:0]$183
+   122/175: $2\run_next$func$src/pe_core.v:180$7.bit_[0:0]$182
+   123/175: $2\run_next$func$src/pe_core.v:180$7.$result[2:0]$181
+   124/175: $2$bitselwrite$pos$src/pe_core.v:173$6[2:0]$180
+   125/175: $2$bitselwrite$pos$src/pe_core.v:172$5[2:0]$179
+   126/175: $2$bitselwrite$pos$src/pe_core.v:170$4[2:0]$178
+   127/175: $1$lookahead\pout$129[7:0]$177
+   128/175: $1$lookahead\poe$128[7:0]$176
+   129/175: $1$mem2reg_wr$\rxm$src/pe_core.v:152$16_DATA[15:0]$175
+   130/175: $1$mem2reg_wr$\rxm$src/pe_core.v:152$16_ADDR[1:0]$174
+   131/175: $1$mem2reg_rd$\txm$src/pe_core.v:151$15_DATA[15:0]$173
+   132/175: $1$mem2reg_rd$\txm$src/pe_core.v:151$15_ADDR[1:0]$172
+   133/175: $1$mem2reg_wr$\txm$src/pe_core.v:149$14_DATA[15:0]$171
+   134/175: $1$mem2reg_wr$\txm$src/pe_core.v:149$14_ADDR[1:0]$170
+   135/175: $1$bitselwrite$pos$src/pe_core.v:201$10[2:0]$169
+   136/175: $1$bitselwrite$pos$src/pe_core.v:200$9[2:0]$168
+   137/175: $1\run_next$func$src/pe_core.v:195$8.inc[2:0]$167
+   138/175: $1\run_next$func$src/pe_core.v:195$8.ones[0:0]$166
+   139/175: $1\run_next$func$src/pe_core.v:195$8.last_[0:0]$165
+   140/175: $1\run_next$func$src/pe_core.v:195$8.bit_[0:0]$164
+   141/175: $1\run_next$func$src/pe_core.v:195$8.$result[2:0]$163
+   142/175: $1\run_next$func$src/pe_core.v:180$7.inc[2:0]$162
+   143/175: $1\run_next$func$src/pe_core.v:180$7.ones[0:0]$161
+   144/175: $1\run_next$func$src/pe_core.v:180$7.last_[0:0]$160
+   145/175: $1\run_next$func$src/pe_core.v:180$7.bit_[0:0]$159
+   146/175: $1\run_next$func$src/pe_core.v:180$7.$result[2:0]$158
+   147/175: $1$bitselwrite$pos$src/pe_core.v:173$6[2:0]$157
+   148/175: $1$bitselwrite$pos$src/pe_core.v:172$5[2:0]$156
+   149/175: $1$bitselwrite$pos$src/pe_core.v:170$4[2:0]$155
+   150/175: $0\rxm[3][15:0]
+   151/175: $0\rxm[2][15:0]
+   152/175: $0\rxm[1][15:0]
+   153/175: $0\rxm[0][15:0]
+   154/175: $0\txm[3][15:0]
+   155/175: $0\txm[2][15:0]
+   156/175: $0\txm[1][15:0]
+   157/175: $0\txm[0][15:0]
+   158/175: $0\rxw[1:0]
+   159/175: $0\rxr[1:0]
+   160/175: $0\txw[1:0]
+   161/175: $0\txr[1:0]
+   162/175: $0\runl[2:0]
+   163/175: $0\rxl[0:0]
+   164/175: $0\last[0:0]
+   165/175: $0\s[0:0]
+   166/175: $0\since[15:0]
+   167/175: $0\crc[15:0]
+   168/175: $0\isr[15:0]
+   169/175: $0\osr[15:0]
+   170/175: $0\x[15:0]
+   171/175: $0\ov[0:0]
+   172/175: $0\halt[0:0]
+   173/175: $0\pc[7:0]
+   174/175: $0\y[15:0]
+   175/175: $0\b[0:0]
+Creating decoders for process `\pe_core.$proc$src/pe_core.v:118$88'.
+     1/4: $2\branch[0:0]
+     2/4: $2\stall[0:0]
+     3/4: $1\stall[0:0]
+     4/4: $1\branch[0:0]
+Creating decoders for process `\pe_core.$proc$src/pe_core.v:108$74'.
+     1/2: $2\jtake[0:0]
+     2/2: $1\jtake[0:0]
+Creating decoders for process `\pe_core.$proc$src/pe_core.v:101$53'.
+Creating decoders for process `\pe_core.$proc$src/pe_core.v:91$44'.
+     1/1: $1\mov_src[15:0]
+
+6.2.8. Executing PROC_DLATCH pass (convert process syncs to latches).
+No latch inferred for signal `\tt_um_pe16.\k' from process `\tt_um_pe16.$proc$src/project.v:140$580'.
+No latch inferred for signal `\tt_um_pe16.\po' from process `\tt_um_pe16.$proc$src/project.v:140$580'.
+No latch inferred for signal `\tt_um_pe16.\pe' from process `\tt_um_pe16.$proc$src/project.v:140$580'.
+No latch inferred for signal `\tt_um_pe16.$mem2reg_rd$\e_rd$src/project.v:133$537_DATA' from process `\tt_um_pe16.$proc$src/project.v:133$603'.
+No latch inferred for signal `\tt_um_pe16.$mem2reg_rd$\e_pc$src/project.v:134$538_DATA' from process `\tt_um_pe16.$proc$src/project.v:134$606'.
+No latch inferred for signal `\tt_um_pe16.$mem2reg_rd$\e_txc$src/project.v:135$539_DATA' from process `\tt_um_pe16.$proc$src/project.v:135$609'.
+No latch inferred for signal `\tt_um_pe16.$mem2reg_rd$\e_rxc$src/project.v:135$540_DATA' from process `\tt_um_pe16.$proc$src/project.v:135$612'.
+No latch inferred for signal `\tt_um_pe16.\e_rd[0]' from process `\tt_um_pe16.$proc$src/project.v:124$615'.
+No latch inferred for signal `\tt_um_pe16.\e_txc[0]' from process `\tt_um_pe16.$proc$src/project.v:124$616'.
+No latch inferred for signal `\tt_um_pe16.\e_rxc[0]' from process `\tt_um_pe16.$proc$src/project.v:125$617'.
+No latch inferred for signal `\tt_um_pe16.\e_pout[0]' from process `\tt_um_pe16.$proc$src/project.v:126$618'.
+No latch inferred for signal `\tt_um_pe16.\e_poe[0]' from process `\tt_um_pe16.$proc$src/project.v:126$619'.
+No latch inferred for signal `\tt_um_pe16.\e_pc[0]' from process `\tt_um_pe16.$proc$src/project.v:126$620'.
+No latch inferred for signal `\pe_core.$mem2reg_rd$\rxm$src/pe_core.v:50$13_DATA' from process `\pe_core.$proc$src/pe_core.v:50$415'.
+No latch inferred for signal `\pe_core.\crc_step$func$src/pe_core.v:83$3.$result' from process `\pe_core.$proc$src/pe_core.v:83$399'.
+No latch inferred for signal `\pe_core.\crc_step$func$src/pe_core.v:82$2.$result' from process `\pe_core.$proc$src/pe_core.v:82$383'.
+No latch inferred for signal `\pe_core.\stall' from process `\pe_core.$proc$src/pe_core.v:118$88'.
+No latch inferred for signal `\pe_core.\branch' from process `\pe_core.$proc$src/pe_core.v:118$88'.
+No latch inferred for signal `\pe_core.\jtake' from process `\pe_core.$proc$src/pe_core.v:108$74'.
+No latch inferred for signal `\pe_core.\mov_val' from process `\pe_core.$proc$src/pe_core.v:101$53'.
+No latch inferred for signal `\pe_core.\ri' from process `\pe_core.$proc$src/pe_core.v:101$53'.
+No latch inferred for signal `\pe_core.\mov_src' from process `\pe_core.$proc$src/pe_core.v:91$44'.
+
+6.2.9. Executing PROC_DFF pass (convert process syncs to FFs).
+Creating register for signal `\tt_um_pe16.\sck_s' using process `\tt_um_pe16.$proc$src/project.v:22$541'.
+  created $adff cell `$procdff$2980' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\cs_s' using process `\tt_um_pe16.$proc$src/project.v:22$541'.
+  created $adff cell `$procdff$2985' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\mosi_s' using process `\tt_um_pe16.$proc$src/project.v:22$541'.
+  created $adff cell `$procdff$2990' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\pin_s1' using process `\tt_um_pe16.$proc$src/project.v:22$541'.
+  created $adff cell `$procdff$2995' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\pin_s2' using process `\tt_um_pe16.$proc$src/project.v:22$541'.
+  created $adff cell `$procdff$3000' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\cmd' using process `\tt_um_pe16.$proc$src/project.v:52$551'.
+  created $adff cell `$procdff$3005' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\cmd_ok' using process `\tt_um_pe16.$proc$src/project.v:52$551'.
+  created $adff cell `$procdff$3010' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\bcnt' using process `\tt_um_pe16.$proc$src/project.v:52$551'.
+  created $adff cell `$procdff$3015' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\wcnt' using process `\tt_um_pe16.$proc$src/project.v:52$551'.
+  created $adff cell `$procdff$3020' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\sh8' using process `\tt_um_pe16.$proc$src/project.v:52$551'.
+  created $adff cell `$procdff$3025' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\sh16' using process `\tt_um_pe16.$proc$src/project.v:52$551'.
+  created $adff cell `$procdff$3030' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\have_addr' using process `\tt_um_pe16.$proc$src/project.v:52$551'.
+  created $adff cell `$procdff$3035' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\haddr' using process `\tt_um_pe16.$proc$src/project.v:52$551'.
+  created $adff cell `$procdff$3040' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\rd_sh' using process `\tt_um_pe16.$proc$src/project.v:52$551'.
+  created $adff cell `$procdff$3045' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\miso' using process `\tt_um_pe16.$proc$src/project.v:52$551'.
+  created $adff cell `$procdff$3050' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\st_imem' using process `\tt_um_pe16.$proc$src/project.v:52$551'.
+  created $adff cell `$procdff$3055' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\st_cfg' using process `\tt_um_pe16.$proc$src/project.v:52$551'.
+  created $adff cell `$procdff$3060' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\st_tx' using process `\tt_um_pe16.$proc$src/project.v:52$551'.
+  created $adff cell `$procdff$3065' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\st_pop' using process `\tt_um_pe16.$proc$src/project.v:52$551'.
+  created $adff cell `$procdff$3070' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\st_ctrl' using process `\tt_um_pe16.$proc$src/project.v:52$551'.
+  created $adff cell `$procdff$3075' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\st_word' using process `\tt_um_pe16.$proc$src/project.v:52$551'.
+  created $adff cell `$procdff$3080' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\eng[0].poly' using process `\tt_um_pe16.$proc$src/project.v:104$588'.
+  created $adff cell `$procdff$3085' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\eng[0].misc' using process `\tt_um_pe16.$proc$src/project.v:104$588'.
+  created $adff cell `$procdff$3090' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\eng[0].run' using process `\tt_um_pe16.$proc$src/project.v:104$588'.
+  created $adff cell `$procdff$3095' with positive edge clock and positive level reset.
+Creating register for signal `\tt_um_pe16.\eng[0].srst' using process `\tt_um_pe16.$proc$src/project.v:104$588'.
+  created $adff cell `$procdff$3100' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\b' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3105' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\y' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3110' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\pout' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3115' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\poe' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3120' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\pc' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3125' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\halt' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3130' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\ov' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3135' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\x' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3140' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\osr' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3145' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\isr' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3150' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\crc' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3155' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\since' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3160' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\s' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3165' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\last' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3170' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\rxl' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3175' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\runl' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3180' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\txr' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3185' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\txw' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3190' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\txc' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3195' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\rxr' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3200' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\rxw' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3205' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\rxc' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3210' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.$bitselwrite$pos$src/pe_core.v:170$4' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3215' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.$bitselwrite$pos$src/pe_core.v:172$5' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3220' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.$bitselwrite$pos$src/pe_core.v:173$6' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3225' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\run_next$func$src/pe_core.v:180$7.$result' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3230' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\run_next$func$src/pe_core.v:180$7.bit_' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3235' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\run_next$func$src/pe_core.v:180$7.last_' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3240' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\run_next$func$src/pe_core.v:180$7.ones' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3245' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\run_next$func$src/pe_core.v:180$7.inc' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3250' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\run_next$func$src/pe_core.v:195$8.$result' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3255' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\run_next$func$src/pe_core.v:195$8.bit_' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3260' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\run_next$func$src/pe_core.v:195$8.last_' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3265' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\run_next$func$src/pe_core.v:195$8.ones' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3270' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\run_next$func$src/pe_core.v:195$8.inc' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3275' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.$bitselwrite$pos$src/pe_core.v:200$9' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3280' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.$bitselwrite$pos$src/pe_core.v:201$10' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3285' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.\txm[0]' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $dff cell `$procdff$3292' with positive edge clock.
+Creating register for signal `\pe_core.\txm[1]' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $dff cell `$procdff$3299' with positive edge clock.
+Creating register for signal `\pe_core.\txm[2]' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $dff cell `$procdff$3306' with positive edge clock.
+Creating register for signal `\pe_core.\txm[3]' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $dff cell `$procdff$3313' with positive edge clock.
+Creating register for signal `\pe_core.\rxm[0]' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $dff cell `$procdff$3320' with positive edge clock.
+Creating register for signal `\pe_core.\rxm[1]' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $dff cell `$procdff$3327' with positive edge clock.
+Creating register for signal `\pe_core.\rxm[2]' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $dff cell `$procdff$3334' with positive edge clock.
+Creating register for signal `\pe_core.\rxm[3]' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $dff cell `$procdff$3341' with positive edge clock.
+Creating register for signal `\pe_core.$mem2reg_wr$\txm$src/pe_core.v:149$14_ADDR' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3346' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.$mem2reg_wr$\txm$src/pe_core.v:149$14_DATA' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3351' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.$mem2reg_rd$\txm$src/pe_core.v:151$15_ADDR' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3356' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.$mem2reg_rd$\txm$src/pe_core.v:151$15_DATA' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3361' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.$mem2reg_wr$\rxm$src/pe_core.v:152$16_ADDR' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3366' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.$mem2reg_wr$\rxm$src/pe_core.v:152$16_DATA' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3371' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.$lookahead\poe$128' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3376' with positive edge clock and positive level reset.
+Creating register for signal `\pe_core.$lookahead\pout$129' using process `\pe_core.$proc$src/pe_core.v:138$130'.
+  created $adff cell `$procdff$3381' with positive edge clock and positive level reset.
+
+6.2.10. Executing PROC_MEMWR pass (convert process memory writes to cells).
+
+6.2.11. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Removing empty process `tt_um_pe16.$proc$src/project.v:22$541'.
+Found and cleaned up 13 empty switches in `\tt_um_pe16.$proc$src/project.v:52$551'.
+Removing empty process `tt_um_pe16.$proc$src/project.v:52$551'.
+Removing empty process `tt_um_pe16.$proc$src/project.v:140$580'.
+Found and cleaned up 3 empty switches in `\tt_um_pe16.$proc$src/project.v:104$588'.
+Removing empty process `tt_um_pe16.$proc$src/project.v:104$588'.
+Found and cleaned up 1 empty switch in `\tt_um_pe16.$proc$src/project.v:133$603'.
+Removing empty process `tt_um_pe16.$proc$src/project.v:133$603'.
+Found and cleaned up 1 empty switch in `\tt_um_pe16.$proc$src/project.v:134$606'.
+Removing empty process `tt_um_pe16.$proc$src/project.v:134$606'.
+Found and cleaned up 1 empty switch in `\tt_um_pe16.$proc$src/project.v:135$609'.
+Removing empty process `tt_um_pe16.$proc$src/project.v:135$609'.
+Found and cleaned up 1 empty switch in `\tt_um_pe16.$proc$src/project.v:135$612'.
+Removing empty process `tt_um_pe16.$proc$src/project.v:135$612'.
+Removing empty process `tt_um_pe16.$proc$src/project.v:124$615'.
+Removing empty process `tt_um_pe16.$proc$src/project.v:124$616'.
+Removing empty process `tt_um_pe16.$proc$src/project.v:125$617'.
+Removing empty process `tt_um_pe16.$proc$src/project.v:126$618'.
+Removing empty process `tt_um_pe16.$proc$src/project.v:126$619'.
+Removing empty process `tt_um_pe16.$proc$src/project.v:126$620'.
+Found and cleaned up 1 empty switch in `\pe_core.$proc$src/pe_core.v:50$415'.
+Removing empty process `pe_core.$proc$src/pe_core.v:50$415'.
+Removing empty process `pe_core.$proc$src/pe_core.v:83$399'.
+Removing empty process `pe_core.$proc$src/pe_core.v:82$383'.
+Found and cleaned up 34 empty switches in `\pe_core.$proc$src/pe_core.v:138$130'.
+Removing empty process `pe_core.$proc$src/pe_core.v:138$130'.
+Found and cleaned up 2 empty switches in `\pe_core.$proc$src/pe_core.v:118$88'.
+Removing empty process `pe_core.$proc$src/pe_core.v:118$88'.
+Found and cleaned up 2 empty switches in `\pe_core.$proc$src/pe_core.v:108$74'.
+Removing empty process `pe_core.$proc$src/pe_core.v:108$74'.
+Removing empty process `pe_core.$proc$src/pe_core.v:101$53'.
+Found and cleaned up 1 empty switch in `\pe_core.$proc$src/pe_core.v:91$44'.
+Removing empty process `pe_core.$proc$src/pe_core.v:91$44'.
+Cleaned up 60 empty switches.
+
+6.2.12. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_pe16.
+<suppressed ~82 debug messages>
+Optimizing module pe_core.
+<suppressed ~229 debug messages>
+Optimizing module pe_imem.
+
+6.3. Executing CHECK pass (checking for obvious problems).
+Checking module tt_um_pe16...
+Checking module pe_core...
+Checking module pe_imem...
+Found and reported 0 problems.
+
+6.4. Executing FLATTEN pass (flatten design).
+Deleting now unused module pe_core.
+Deleting now unused module pe_imem.
+<suppressed ~2 debug messages>
+
+6.5. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_pe16.
+
+6.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_pe16..
+Removed 545 unused cells and 1568 unused wires.
+<suppressed ~555 debug messages>
+
+6.7. Executing CHECK pass (checking for obvious problems).
+Checking module tt_um_pe16...
+Found and reported 0 problems.
+
+6.8. Executing OPT pass (performing simple optimizations).
+
+6.8.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_pe16.
+
+6.8.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_pe16'.
+Computing hashes of 721 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Computing hashes of 623 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Computing hashes of 617 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Computing hashes of 614 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+<suppressed ~321 debug messages>
+Removed a total of 107 cells.
+
+6.8.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \tt_um_pe16..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+      Replacing known input bits on port B of cell $flatten\eng[0].u_core.$procmux$2863: \eng[0].u_core.halt -> 1'1
+      Replacing known input bits on port A of cell $flatten\eng[0].u_core.$procmux$2861: \eng[0].u_core.halt -> 1'0
+      Replacing known input bits on port A of cell $flatten\eng[0].u_core.$procmux$2859: \eng[0].u_core.halt -> 1'0
+      Replacing known input bits on port B of cell $procmux$855: \cmd_ok -> 1'1
+      Replacing known input bits on port A of cell $procmux$853: \cmd_ok -> 1'0
+  Analyzing evaluation results.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$1578.
+    dead port 2/2 on $mux $flatten\eng[0].u_core.$procmux$1580.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$1810.
+    dead port 2/2 on $mux $flatten\eng[0].u_core.$procmux$1655.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$1657.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$989.
+    dead port 2/2 on $mux $flatten\eng[0].u_core.$procmux$986.
+    dead port 2/2 on $mux $flatten\eng[0].u_core.$procmux$2331.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$2334.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$984.
+    dead port 2/2 on $mux $flatten\eng[0].u_core.$procmux$1576.
+    dead port 2/2 on $mux $flatten\eng[0].u_core.$procmux$982.
+    dead port 2/2 on $mux $flatten\eng[0].u_core.$procmux$1659.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$1662.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$1583.
+    dead port 2/2 on $mux $flatten\eng[0].u_core.$procmux$1617.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$948.
+    dead port 2/2 on $mux $flatten\eng[0].u_core.$procmux$945.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$943.
+    dead port 2/2 on $mux $flatten\eng[0].u_core.$procmux$941.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$929.
+    dead port 2/2 on $mux $flatten\eng[0].u_core.$procmux$926.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$924.
+    dead port 2/2 on $mux $flatten\eng[0].u_core.$procmux$922.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$1820.
+    dead port 2/2 on $mux $flatten\eng[0].u_core.$procmux$2062.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$2065.
+    dead port 2/2 on $mux $flatten\eng[0].u_core.$procmux$2071.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$2074.
+    dead port 2/2 on $mux $flatten\eng[0].u_core.$procmux$1822.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$913.
+    dead port 2/2 on $mux $flatten\eng[0].u_core.$procmux$910.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$908.
+    dead port 2/2 on $mux $flatten\eng[0].u_core.$procmux$906.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$1825.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$1619.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$2936.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$2944.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$2962.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$1805.
+    dead port 2/2 on $mux $flatten\eng[0].u_core.$procmux$1621.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$2221.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$1624.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$1574.
+    dead port 1/2 on $mux $flatten\eng[0].u_core.$procmux$2215.
+    dead port 2/2 on $mux $flatten\eng[0].u_core.$procmux$1807.
+Removed 46 multiplexer ports.
+<suppressed ~545 debug messages>
+
+6.8.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \tt_um_pe16.
+Performed a total of 0 changes.
+
+6.8.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_pe16'.
+Computing hashes of 568 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Computing hashes of 565 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Computing hashes of 564 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+<suppressed ~12 debug messages>
+Removed a total of 4 cells.
+
+6.8.6. Executing OPT_DFF pass (perform DFF optimizations).
+
+6.8.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_pe16..
+Removed 0 unused cells and 157 unused wires.
+<suppressed ~1 debug messages>
+
+6.8.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_pe16.
+
+6.8.9. Rerunning OPT passes. (Maybe there is more to do..)
+
+6.8.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \tt_um_pe16..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~496 debug messages>
+
+6.8.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \tt_um_pe16.
+    New ctrl vector for $pmux cell $flatten\eng[0].u_core.$procmux$2646: $auto$opt_reduce.cc:137:opt_pmux$3385
+  Optimizing cells in module \tt_um_pe16.
+Performed a total of 1 changes.
+
+6.8.12. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_pe16'.
+Computing hashes of 565 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Removed a total of 0 cells.
+
+6.8.13. Executing OPT_DFF pass (perform DFF optimizations).
+
+6.8.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_pe16..
+
+6.8.15. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_pe16.
+
+6.8.16. Rerunning OPT passes. (Maybe there is more to do..)
+
+6.8.17. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \tt_um_pe16..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~491 debug messages>
+
+6.8.18. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \tt_um_pe16.
+Performed a total of 0 changes.
+
+6.8.19. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_pe16'.
+Computing hashes of 565 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Removed a total of 0 cells.
+
+6.8.20. Executing OPT_DFF pass (perform DFF optimizations).
+
+6.8.21. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_pe16..
+
+6.8.22. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_pe16.
+
+6.8.23. Finished fast OPT passes. (There is nothing left to do.)
+
+6.9. Executing FSM pass (extract and optimize FSM).
+
+6.9.1. Executing FSM_DETECT pass (finding FSMs in design).
+
+6.9.2. Executing FSM_EXTRACT pass (extracting FSM from design).
+
+6.9.3. Executing FSM_OPT pass (simple optimizations of FSMs).
+
+6.9.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_pe16..
+
+6.9.5. Executing FSM_OPT pass (simple optimizations of FSMs).
+
+6.9.6. Executing FSM_RECODE pass (re-assigning FSM state encoding).
+
+6.9.7. Executing FSM_INFO pass (dumping all available information on FSM cells).
+
+6.9.8. Executing FSM_MAP pass (mapping FSMs to basic logic).
+
+6.10. Executing OPT pass (performing simple optimizations).
+
+6.10.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_pe16.
+
+6.10.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_pe16'.
+Computing hashes of 565 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Removed a total of 0 cells.
+
+6.10.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \tt_um_pe16..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~491 debug messages>
+
+6.10.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \tt_um_pe16.
+Performed a total of 0 changes.
+
+6.10.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_pe16'.
+Computing hashes of 565 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Removed a total of 0 cells.
+
+6.10.6. Executing OPT_DFF pass (perform DFF optimizations).
+Adding EN signal on $procdff$3095 ($adff) from module tt_um_pe16 (D = \st_word [0], Q = \eng[0].run).
+Adding EN signal on $procdff$3050 ($adff) from module tt_um_pe16 (D = $procmux$740_Y, Q = \miso).
+Adding EN signal on $procdff$3085 ($adff) from module tt_um_pe16 (D = \st_word, Q = \eng[0].poly).
+Adding EN signal on $procdff$3090 ($adff) from module tt_um_pe16 (D = \st_word [11:0], Q = \eng[0].misc).
+Adding EN signal on $procdff$3005 ($adff) from module tt_um_pe16 (D = { \sh8 [6:0] \mosi_s [1] }, Q = \cmd).
+Adding EN signal on $procdff$3010 ($adff) from module tt_um_pe16 (D = $0\cmd_ok[0:0], Q = \cmd_ok).
+Adding EN signal on $procdff$3015 ($adff) from module tt_um_pe16 (D = $0\bcnt[2:0], Q = \bcnt).
+Adding EN signal on $procdff$3020 ($adff) from module tt_um_pe16 (D = $0\wcnt[3:0], Q = \wcnt).
+Adding EN signal on $procdff$3025 ($adff) from module tt_um_pe16 (D = $procmux$814_Y, Q = \sh8).
+Adding EN signal on $procdff$3030 ($adff) from module tt_um_pe16 (D = { \sh16 [14:0] \mosi_s [1] }, Q = \sh16).
+Adding EN signal on $procdff$3035 ($adff) from module tt_um_pe16 (D = $0\have_addr[0:0], Q = \have_addr).
+Adding EN signal on $procdff$3080 ($adff) from module tt_um_pe16 (D = $procmux$726_Y, Q = \st_word).
+Adding EN signal on $procdff$3040 ($adff) from module tt_um_pe16 (D = $0\haddr[7:0], Q = \haddr).
+Adding EN signal on $procdff$3045 ($adff) from module tt_um_pe16 (D = $procmux$751_Y, Q = \rd_sh).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3341 ($dff) from module tt_um_pe16 (D = \eng[0].u_core.isr, Q = \eng[0].u_core.rxm[3]).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3334 ($dff) from module tt_um_pe16 (D = \eng[0].u_core.isr, Q = \eng[0].u_core.rxm[2]).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3205 ($adff) from module tt_um_pe16 (D = $flatten\eng[0].u_core.$0\rxw[1:0], Q = \eng[0].u_core.rxw).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3327 ($dff) from module tt_um_pe16 (D = \eng[0].u_core.isr, Q = \eng[0].u_core.rxm[1]).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3200 ($adff) from module tt_um_pe16 (D = $flatten\eng[0].u_core.$0\rxr[1:0], Q = \eng[0].u_core.rxr).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3190 ($adff) from module tt_um_pe16 (D = $flatten\eng[0].u_core.$0\txw[1:0], Q = \eng[0].u_core.txw).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3185 ($adff) from module tt_um_pe16 (D = $flatten\eng[0].u_core.$0\txr[1:0], Q = \eng[0].u_core.txr).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3320 ($dff) from module tt_um_pe16 (D = \eng[0].u_core.isr, Q = \eng[0].u_core.rxm[0]).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3180 ($adff) from module tt_um_pe16 (D = $flatten\eng[0].u_core.$0\runl[2:0], Q = \eng[0].u_core.runl).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3175 ($adff) from module tt_um_pe16 (D = $flatten\eng[0].u_core.$0\rxl[0:0], Q = \eng[0].u_core.rxl).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3170 ($adff) from module tt_um_pe16 (D = $flatten\eng[0].u_core.$0\last[0:0], Q = \eng[0].u_core.last).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3165 ($adff) from module tt_um_pe16 (D = $flatten\eng[0].u_core.$0\s[0:0], Q = \eng[0].u_core.s).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3313 ($dff) from module tt_um_pe16 (D = \st_word, Q = \eng[0].u_core.txm[3]).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3160 ($adff) from module tt_um_pe16 (D = $flatten\eng[0].u_core.$0\since[15:0], Q = \eng[0].u_core.since).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3155 ($adff) from module tt_um_pe16 (D = $flatten\eng[0].u_core.$0\crc[15:0], Q = \eng[0].u_core.crc).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3150 ($adff) from module tt_um_pe16 (D = $flatten\eng[0].u_core.$0\isr[15:0], Q = \eng[0].u_core.isr).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3306 ($dff) from module tt_um_pe16 (D = \st_word, Q = \eng[0].u_core.txm[2]).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3140 ($adff) from module tt_um_pe16 (D = $flatten\eng[0].u_core.$0\x[15:0], Q = \eng[0].u_core.x).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3135 ($adff) from module tt_um_pe16 (D = $flatten\eng[0].u_core.$0\ov[0:0], Q = \eng[0].u_core.ov).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3130 ($adff) from module tt_um_pe16 (D = $flatten\eng[0].u_core.$0\halt[0:0], Q = \eng[0].u_core.halt).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3125 ($adff) from module tt_um_pe16 (D = $flatten\eng[0].u_core.$0\pc[7:0], Q = \eng[0].u_core.pc).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3299 ($dff) from module tt_um_pe16 (D = \st_word, Q = \eng[0].u_core.txm[1]).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3120 ($adff) from module tt_um_pe16 (D = $flatten\eng[0].u_core.$0$lookahead\poe$128[7:0]$152, Q = \eng[0].u_core.poe).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3115 ($adff) from module tt_um_pe16 (D = $flatten\eng[0].u_core.$0$lookahead\pout$129[7:0]$153, Q = \eng[0].u_core.pout).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3110 ($adff) from module tt_um_pe16 (D = $flatten\eng[0].u_core.$0\y[15:0], Q = \eng[0].u_core.y).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3105 ($adff) from module tt_um_pe16 (D = $flatten\eng[0].u_core.$0\b[0:0], Q = \eng[0].u_core.b).
+Adding EN signal on $flatten\eng[0].u_core.$procdff$3292 ($dff) from module tt_um_pe16 (D = \st_word, Q = \eng[0].u_core.txm[0]).
+
+6.10.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_pe16..
+Removed 56 unused cells and 56 unused wires.
+<suppressed ~57 debug messages>
+
+6.10.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_pe16.
+<suppressed ~44 debug messages>
+
+6.10.9. Rerunning OPT passes. (Maybe there is more to do..)
+
+6.10.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \tt_um_pe16..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~422 debug messages>
+
+6.10.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \tt_um_pe16.
+Performed a total of 0 changes.
+
+6.10.12. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_pe16'.
+Computing hashes of 665 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Computing hashes of 603 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Computing hashes of 601 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+<suppressed ~192 debug messages>
+Removed a total of 64 cells.
+
+6.10.13. Executing OPT_DFF pass (perform DFF optimizations).
+
+6.10.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_pe16..
+Removed 0 unused cells and 64 unused wires.
+<suppressed ~1 debug messages>
+
+6.10.15. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_pe16.
+
+6.10.16. Rerunning OPT passes. (Maybe there is more to do..)
+
+6.10.17. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \tt_um_pe16..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~422 debug messages>
+
+6.10.18. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \tt_um_pe16.
+Performed a total of 0 changes.
+
+6.10.19. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_pe16'.
+Computing hashes of 601 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Removed a total of 0 cells.
+
+6.10.20. Executing OPT_DFF pass (perform DFF optimizations).
+
+6.10.21. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_pe16..
+
+6.10.22. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_pe16.
+
+6.10.23. Finished fast OPT passes. (There is nothing left to do.)
+
+6.11. Executing WREDUCE pass (reducing word size of cells).
+Removed top 1 bits (of 3) from port B of cell tt_um_pe16.$auto$simple.cc:194:make_patterns_logic$3720 ($ne).
+Removed top 1 bits (of 3) from port B of cell tt_um_pe16.$auto$simple.cc:194:make_patterns_logic$3716 ($ne).
+Removed top 1 bits (of 4) from port B of cell tt_um_pe16.$auto$simple.cc:194:make_patterns_logic$3699 ($ne).
+Removed top 1 bits (of 3) from port B of cell tt_um_pe16.$auto$simple.cc:194:make_patterns_logic$3690 ($ne).
+Removed top 1 bits (of 4) from port B of cell tt_um_pe16.$auto$simple.cc:194:make_patterns_logic$3684 ($ne).
+Removed top 1 bits (of 3) from port B of cell tt_um_pe16.$auto$simple.cc:194:make_patterns_logic$3664 ($ne).
+Removed top 1 bits (of 3) from port B of cell tt_um_pe16.$auto$simple.cc:194:make_patterns_logic$3658 ($ne).
+Removed top 1 bits (of 3) from port B of cell tt_um_pe16.$auto$simple.cc:194:make_patterns_logic$3647 ($ne).
+Removed top 1 bits (of 3) from port B of cell tt_um_pe16.$auto$simple.cc:194:make_patterns_logic$3645 ($ne).
+Removed top 1 bits (of 3) from port B of cell tt_um_pe16.$auto$simple.cc:194:make_patterns_logic$3643 ($ne).
+Removed top 1 bits (of 3) from port B of cell tt_um_pe16.$auto$simple.cc:194:make_patterns_logic$3627 ($ne).
+Removed top 1 bits (of 3) from port B of cell tt_um_pe16.$auto$simple.cc:194:make_patterns_logic$3604 ($ne).
+Removed top 1 bits (of 3) from port B of cell tt_um_pe16.$auto$simple.cc:194:make_patterns_logic$3602 ($ne).
+Removed top 2 bits (of 4) from port B of cell tt_um_pe16.$auto$simple.cc:194:make_patterns_logic$3600 ($ne).
+Removed top 1 bits (of 3) from port B of cell tt_um_pe16.$auto$simple.cc:194:make_patterns_logic$3598 ($ne).
+Removed top 1 bits (of 3) from port B of cell tt_um_pe16.$auto$simple.cc:194:make_patterns_logic$3592 ($ne).
+Removed top 2 bits (of 4) from port B of cell tt_um_pe16.$auto$simple.cc:194:make_patterns_logic$3560 ($ne).
+Removed top 1 bits (of 3) from port B of cell tt_um_pe16.$auto$simple.cc:194:make_patterns_logic$3558 ($ne).
+Removed top 2 bits (of 4) from port B of cell tt_um_pe16.$auto$simple.cc:194:make_patterns_logic$3552 ($ne).
+Removed top 1 bits (of 2) from port B of cell tt_um_pe16.$auto$simple.cc:194:make_patterns_logic$3464 ($ne).
+Removed top 1 bits (of 16) from FF cell tt_um_pe16.$auto$ff.cc:337:slice$3431 ($adffe).
+Removed top 2 bits (of 3) from port B of cell tt_um_pe16.$auto$simple.cc:194:make_patterns_logic$3426 ($ne).
+Removed top 1 bits (of 8) from FF cell tt_um_pe16.$auto$ff.cc:337:slice$3424 ($adffe).
+Removed top 2 bits (of 4) from port B of cell tt_um_pe16.$auto$simple.cc:194:make_patterns_logic$3410 ($ne).
+Removed top 2 bits (of 3) from port B of cell tt_um_pe16.$add$src/project.v:62$555 ($add).
+Removed top 3 bits (of 6) from port B of cell tt_um_pe16.$eq$src/project.v:67$561 ($eq).
+Removed top 3 bits (of 4) from port B of cell tt_um_pe16.$add$src/project.v:71$564 ($add).
+Removed top 7 bits (of 8) from port B of cell tt_um_pe16.$add$src/project.v:87$568 ($add).
+Removed top 31 bits (of 32) from port B of cell tt_um_pe16.$lt$src/project.v:132$569 ($lt).
+Removed top 3 bits (of 6) from port B of cell tt_um_pe16.$eq$src/project.v:134$572 ($eq).
+Removed top 3 bits (of 6) from port B of cell tt_um_pe16.$eq$src/project.v:135$576 ($eq).
+Removed top 10 bits (of 16) from mux cell tt_um_pe16.$ternary$src/project.v:135$577 ($mux).
+Removed top 7 bits (of 8) from port B of cell tt_um_pe16.$eq$src/project.v:109$594 ($eq).
+Removed top 4 bits (of 6) from port B of cell tt_um_pe16.$procmux$624_CMP0 ($eq).
+Removed top 3 bits (of 6) from port B of cell tt_um_pe16.$procmux$643_CMP0 ($eq).
+Removed top 4 bits (of 6) from port B of cell tt_um_pe16.$procmux$664_CMP0 ($eq).
+Removed top 5 bits (of 6) from port B of cell tt_um_pe16.$procmux$686_CMP0 ($eq).
+Removed top 1 bits (of 8) from mux cell tt_um_pe16.$procmux$814 ($mux).
+Removed top 1 bits (of 3) from FF cell tt_um_pe16.$procdff$2985 ($adff).
+Removed top 1 bits (of 3) from FF cell tt_um_pe16.$procdff$2990 ($adff).
+Removed top 2 bits (of 3) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$procmux$2974_CMP0 ($eq).
+Removed top 1 bits (of 3) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$procmux$2973_CMP0 ($eq).
+Removed top 1 bits (of 3) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$procmux$2972_CMP0 ($eq).
+Removed top 2 bits (of 3) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$procmux$2942_CMP0 ($eq).
+Removed top 1 bits (of 3) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$procmux$2742_CMP0 ($eq).
+Removed top 1 bits (of 3) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$procmux$2678_CMP0 ($eq).
+Removed top 1 bits (of 2) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$procmux$2494_CMP0 ($eq).
+Removed top 1 bits (of 2) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$procmux$2456_CMP0 ($eq).
+Removed top 1 bits (of 2) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$procmux$2329_CMP0 ($eq).
+Removed top 1 bits (of 3) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$procmux$1819_CMP0 ($eq).
+Removed top 2 bits (of 3) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$procmux$981_CMP0 ($eq).
+Removed top 1 bits (of 2) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$procmux$896_CMP0 ($eq).
+Converting cell tt_um_pe16.$flatten\eng[0].u_core.$neg$src/pe_core.v:201$376 ($neg) from signed to unsigned.
+Removed top 1 bits (of 4) from port A of cell tt_um_pe16.$flatten\eng[0].u_core.$neg$src/pe_core.v:201$376 ($neg).
+Removed top 2 bits (of 3) from mux cell tt_um_pe16.$flatten\eng[0].u_core.$ternary$src/pe_core.v:190$349 ($mux).
+Converting cell tt_um_pe16.$flatten\eng[0].u_core.$neg$src/pe_core.v:173$313 ($neg) from signed to unsigned.
+Removed top 1 bits (of 4) from port A of cell tt_um_pe16.$flatten\eng[0].u_core.$neg$src/pe_core.v:173$313 ($neg).
+Converting cell tt_um_pe16.$flatten\eng[0].u_core.$neg$src/pe_core.v:172$303 ($neg) from signed to unsigned.
+Removed top 1 bits (of 4) from port A of cell tt_um_pe16.$flatten\eng[0].u_core.$neg$src/pe_core.v:172$303 ($neg).
+Removed top 1 bits (of 17) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$gt$src/pe_core.v:166$280 ($gt).
+Removed top 15 bits (of 16) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$sub$src/pe_core.v:162$278 ($sub).
+Removed top 15 bits (of 16) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$sub$src/pe_core.v:161$274 ($sub).
+Removed top 1 bits (of 3) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$eq$src/pe_core.v:161$272 ($eq).
+Removed top 15 bits (of 16) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$add$src/pe_core.v:158$234 ($add).
+Removed top 2 bits (of 3) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$sub$src/pe_core.v:154$215 ($sub).
+Removed top 2 bits (of 3) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$add$src/pe_core.v:154$214 ($add).
+Removed top 2 bits (of 3) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$sub$src/pe_core.v:153$213 ($sub).
+Removed top 2 bits (of 3) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$add$src/pe_core.v:153$212 ($add).
+Removed top 1 bits (of 2) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$add$src/pe_core.v:152$211 ($add).
+Removed top 1 bits (of 2) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$add$src/pe_core.v:151$208 ($add).
+Removed top 1 bits (of 2) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$add$src/pe_core.v:150$204 ($add).
+Removed top 1 bits (of 2) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$add$src/pe_core.v:149$203 ($add).
+Removed top 1 bits (of 2) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$eq$src/pe_core.v:134$120 ($eq).
+Removed top 7 bits (of 8) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$add$src/pe_core.v:129$99 ($add).
+Removed top 1 bits (of 17) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$lt$src/pe_core.v:124$91 ($lt).
+Removed top 1 bits (of 17) from port A of cell tt_um_pe16.$flatten\eng[0].u_core.$add$src/pe_core.v:105$73 ($add).
+Removed top 16 bits (of 17) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$add$src/pe_core.v:105$73 ($add).
+Removed top 2 bits (of 3) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$add$src/pe_core.v:85$42 ($add).
+Removed top 2 bits (of 3) from port B of cell tt_um_pe16.$flatten\eng[0].u_core.$add$src/pe_core.v:81$40 ($add).
+Removed top 1 bits (of 8) from mux cell tt_um_pe16.$procmux$811 ($mux).
+Removed top 1 bits (of 8) from mux cell tt_um_pe16.$procmux$808 ($mux).
+Removed top 2 bits (of 3) from wire tt_um_pe16.$flatten\eng[0].u_core.$ternary$src/pe_core.v:175$323_Y.
+Removed top 1 bits (of 8) from wire tt_um_pe16.$procmux$814_Y.
+Removed top 1 bits (of 8) from wire tt_um_pe16.$procmux$811_Y.
+Removed top 1 bits (of 8) from wire tt_um_pe16.$procmux$808_Y.
+Removed top 1 bits (of 3) from wire tt_um_pe16.cs_s.
+Removed top 1 bits (of 3) from wire tt_um_pe16.mosi_s.
+Removed top 1 bits (of 8) from wire tt_um_pe16.sh8.
+Removed top 1 bits (of 16) from wire tt_um_pe16.sh16.
+Removed top 10 bits (of 16) from wire tt_um_pe16.$ternary$src/project.v:135$577_Y.
+
+6.12. Executing PEEPOPT pass (run peephole optimizers).
+
+6.13. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_pe16..
+Removed 0 unused cells and 9 unused wires.
+<suppressed ~1 debug messages>
+
+6.14. Executing ALUMACC pass (create $alu and $macc cells).
+Extracting $alu and $macc cells in module tt_um_pe16:
+  creating $macc model for $flatten\eng[0].u_core.$sub$src/pe_core.v:162$278 ($sub).
+  creating $macc model for $flatten\eng[0].u_core.$sub$src/pe_core.v:161$274 ($sub).
+  creating $macc model for $flatten\eng[0].u_core.$add$src/pe_core.v:158$234 ($add).
+  creating $macc model for $flatten\eng[0].u_core.$sub$src/pe_core.v:154$215 ($sub).
+  creating $macc model for $flatten\eng[0].u_core.$add$src/pe_core.v:154$214 ($add).
+  creating $macc model for $flatten\eng[0].u_core.$sub$src/pe_core.v:153$213 ($sub).
+  creating $macc model for $flatten\eng[0].u_core.$add$src/pe_core.v:153$212 ($add).
+  creating $macc model for $flatten\eng[0].u_core.$add$src/pe_core.v:152$211 ($add).
+  creating $macc model for $flatten\eng[0].u_core.$add$src/pe_core.v:151$208 ($add).
+  creating $macc model for $flatten\eng[0].u_core.$add$src/pe_core.v:150$204 ($add).
+  creating $macc model for $flatten\eng[0].u_core.$add$src/pe_core.v:149$203 ($add).
+  creating $macc model for $flatten\eng[0].u_core.$neg$src/pe_core.v:173$313 ($neg).
+  creating $macc model for $flatten\eng[0].u_core.$neg$src/pe_core.v:172$303 ($neg).
+  creating $macc model for $flatten\eng[0].u_core.$add$src/pe_core.v:129$99 ($add).
+  creating $macc model for $flatten\eng[0].u_core.$neg$src/pe_core.v:201$376 ($neg).
+  creating $macc model for $flatten\eng[0].u_core.$add$src/pe_core.v:105$73 ($add).
+  creating $macc model for $flatten\eng[0].u_core.$add$src/pe_core.v:81$40 ($add).
+  creating $macc model for $flatten\eng[0].u_core.$sub$src/pe_core.v:97$47 ($sub).
+  creating $macc model for $flatten\eng[0].u_core.$add$src/pe_core.v:85$42 ($add).
+  creating $macc model for $add$src/project.v:62$555 ($add).
+  creating $macc model for $add$src/project.v:71$564 ($add).
+  creating $macc model for $add$src/project.v:87$568 ($add).
+  merging $macc model for $flatten\eng[0].u_core.$add$src/pe_core.v:153$212 into $flatten\eng[0].u_core.$sub$src/pe_core.v:153$213.
+  merging $macc model for $flatten\eng[0].u_core.$add$src/pe_core.v:154$214 into $flatten\eng[0].u_core.$sub$src/pe_core.v:154$215.
+  creating $alu model for $macc $add$src/project.v:62$555.
+  creating $alu model for $macc $flatten\eng[0].u_core.$add$src/pe_core.v:85$42.
+  creating $alu model for $macc $flatten\eng[0].u_core.$sub$src/pe_core.v:97$47.
+  creating $alu model for $macc $flatten\eng[0].u_core.$add$src/pe_core.v:81$40.
+  creating $alu model for $macc $flatten\eng[0].u_core.$add$src/pe_core.v:105$73.
+  creating $alu model for $macc $flatten\eng[0].u_core.$neg$src/pe_core.v:201$376.
+  creating $alu model for $macc $flatten\eng[0].u_core.$add$src/pe_core.v:129$99.
+  creating $alu model for $macc $flatten\eng[0].u_core.$neg$src/pe_core.v:172$303.
+  creating $alu model for $macc $flatten\eng[0].u_core.$neg$src/pe_core.v:173$313.
+  creating $alu model for $macc $flatten\eng[0].u_core.$add$src/pe_core.v:149$203.
+  creating $alu model for $macc $flatten\eng[0].u_core.$add$src/pe_core.v:150$204.
+  creating $alu model for $macc $flatten\eng[0].u_core.$add$src/pe_core.v:151$208.
+  creating $alu model for $macc $flatten\eng[0].u_core.$add$src/pe_core.v:152$211.
+  creating $alu model for $macc $add$src/project.v:71$564.
+  creating $alu model for $macc $add$src/project.v:87$568.
+  creating $alu model for $macc $flatten\eng[0].u_core.$add$src/pe_core.v:158$234.
+  creating $alu model for $macc $flatten\eng[0].u_core.$sub$src/pe_core.v:161$274.
+  creating $alu model for $macc $flatten\eng[0].u_core.$sub$src/pe_core.v:162$278.
+  creating $macc cell for $flatten\eng[0].u_core.$sub$src/pe_core.v:154$215: $auto$alumacc.cc:399:replace_macc$3748
+  creating $macc cell for $flatten\eng[0].u_core.$sub$src/pe_core.v:153$213: $auto$alumacc.cc:399:replace_macc$3749
+  creating $alu model for $flatten\eng[0].u_core.$gt$src/pe_core.v:166$280 ($gt): new $alu
+  creating $alu model for $flatten\eng[0].u_core.$lt$src/pe_core.v:124$91 ($lt): merged with $flatten\eng[0].u_core.$gt$src/pe_core.v:166$280.
+  creating $alu model for $flatten\eng[0].u_core.$ge$src/pe_core.v:67$29 ($ge): new $alu
+  creating $alu model for $lt$src/project.v:132$569 ($lt): new $alu
+  creating $alu cell for $lt$src/project.v:132$569: $auto$alumacc.cc:548:replace_alu$3753
+  creating $alu cell for $flatten\eng[0].u_core.$ge$src/pe_core.v:67$29: $auto$alumacc.cc:548:replace_alu$3758
+  creating $alu cell for $flatten\eng[0].u_core.$gt$src/pe_core.v:166$280, $flatten\eng[0].u_core.$lt$src/pe_core.v:124$91: $auto$alumacc.cc:548:replace_alu$3771
+  creating $alu cell for $flatten\eng[0].u_core.$sub$src/pe_core.v:162$278: $auto$alumacc.cc:548:replace_alu$3782
+  creating $alu cell for $flatten\eng[0].u_core.$sub$src/pe_core.v:161$274: $auto$alumacc.cc:548:replace_alu$3785
+  creating $alu cell for $add$src/project.v:87$568: $auto$alumacc.cc:548:replace_alu$3788
+  creating $alu cell for $add$src/project.v:71$564: $auto$alumacc.cc:548:replace_alu$3791
+  creating $alu cell for $flatten\eng[0].u_core.$add$src/pe_core.v:152$211: $auto$alumacc.cc:548:replace_alu$3794
+  creating $alu cell for $flatten\eng[0].u_core.$add$src/pe_core.v:151$208: $auto$alumacc.cc:548:replace_alu$3797
+  creating $alu cell for $flatten\eng[0].u_core.$add$src/pe_core.v:150$204: $auto$alumacc.cc:548:replace_alu$3800
+  creating $alu cell for $flatten\eng[0].u_core.$add$src/pe_core.v:149$203: $auto$alumacc.cc:548:replace_alu$3803
+  creating $alu cell for $flatten\eng[0].u_core.$neg$src/pe_core.v:173$313: $auto$alumacc.cc:548:replace_alu$3806
+  creating $alu cell for $flatten\eng[0].u_core.$neg$src/pe_core.v:172$303: $auto$alumacc.cc:548:replace_alu$3809
+  creating $alu cell for $flatten\eng[0].u_core.$add$src/pe_core.v:129$99: $auto$alumacc.cc:548:replace_alu$3812
+  creating $alu cell for $flatten\eng[0].u_core.$neg$src/pe_core.v:201$376: $auto$alumacc.cc:548:replace_alu$3815
+  creating $alu cell for $flatten\eng[0].u_core.$add$src/pe_core.v:158$234: $auto$alumacc.cc:548:replace_alu$3818
+  creating $alu cell for $flatten\eng[0].u_core.$add$src/pe_core.v:105$73: $auto$alumacc.cc:548:replace_alu$3821
+  creating $alu cell for $flatten\eng[0].u_core.$add$src/pe_core.v:81$40: $auto$alumacc.cc:548:replace_alu$3824
+  creating $alu cell for $flatten\eng[0].u_core.$sub$src/pe_core.v:97$47: $auto$alumacc.cc:548:replace_alu$3827
+  creating $alu cell for $flatten\eng[0].u_core.$add$src/pe_core.v:85$42: $auto$alumacc.cc:548:replace_alu$3830
+  creating $alu cell for $add$src/project.v:62$555: $auto$alumacc.cc:548:replace_alu$3833
+  created 21 $alu and 2 $macc cells.
+
+6.15. Executing SHARE pass (SAT-based resource sharing).
+Found 3 cells in module tt_um_pe16 that may be considered for resource sharing.
+  Analyzing resource sharing options for $flatten\eng[0].u_core.$shl$src/pe_core.v:98$48 ($shl):
+    Found 7 activation_patterns using ctrl signal { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:108$75_Y $flatten\eng[0].u_core.$eq$src/pe_core.v:108$77_Y $flatten\eng[0].u_core.$eq$src/pe_core.v:109$78_Y $flatten\eng[0].u_core.$eq$src/pe_core.v:162$276_Y $flatten\eng[0].u_core.$procmux$1802_CMP $flatten\eng[0].u_core.$procmux$2742_CMP $flatten\eng[0].u_core.$procmux$2954_CMP $flatten\eng[0].u_core.$procmux$2955_CMP \eng[0].srst \eng[0].run }.
+    Found 2 candidates: $flatten\eng[0].u_core.$shl$src/pe_core.v:98$49 $flatten\eng[0].u_core.$shl$src/pe_core.v:61$19
+    Analyzing resource sharing with $flatten\eng[0].u_core.$shl$src/pe_core.v:98$49 ($shl):
+      Found 7 activation_patterns using ctrl signal { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:108$75_Y $flatten\eng[0].u_core.$eq$src/pe_core.v:108$77_Y $flatten\eng[0].u_core.$eq$src/pe_core.v:109$78_Y $flatten\eng[0].u_core.$eq$src/pe_core.v:162$276_Y $flatten\eng[0].u_core.$procmux$1802_CMP $flatten\eng[0].u_core.$procmux$2742_CMP $flatten\eng[0].u_core.$procmux$2954_CMP $flatten\eng[0].u_core.$procmux$2955_CMP \eng[0].srst \eng[0].run }.
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$48: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:162$276_Y $flatten\eng[0].u_core.$procmux$1802_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$48: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:108$77_Y $flatten\eng[0].u_core.$procmux$1802_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$48: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:108$75_Y $flatten\eng[0].u_core.$procmux$1802_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$48: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:109$78_Y $flatten\eng[0].u_core.$procmux$1802_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$48: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$procmux$1802_CMP $flatten\eng[0].u_core.$procmux$2742_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$48: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$procmux$1802_CMP $flatten\eng[0].u_core.$procmux$2955_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$48: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$procmux$1802_CMP $flatten\eng[0].u_core.$procmux$2954_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$49: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$procmux$1802_CMP $flatten\eng[0].u_core.$procmux$2954_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$49: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$procmux$1802_CMP $flatten\eng[0].u_core.$procmux$2955_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$49: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$procmux$1802_CMP $flatten\eng[0].u_core.$procmux$2742_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$49: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:109$78_Y $flatten\eng[0].u_core.$procmux$1802_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$49: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:108$75_Y $flatten\eng[0].u_core.$procmux$1802_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$49: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:108$77_Y $flatten\eng[0].u_core.$procmux$1802_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$49: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:162$276_Y $flatten\eng[0].u_core.$procmux$1802_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Size of SAT problem: 8 cells, 102 variables, 298 clauses
+      According to the SAT solver this pair of cells can not be shared.
+      Model from SAT solver: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:108$75_Y $flatten\eng[0].u_core.$eq$src/pe_core.v:108$77_Y $flatten\eng[0].u_core.$eq$src/pe_core.v:109$78_Y $flatten\eng[0].u_core.$eq$src/pe_core.v:162$276_Y $flatten\eng[0].u_core.$procmux$1802_CMP $flatten\eng[0].u_core.$procmux$2742_CMP $flatten\eng[0].u_core.$procmux$2954_CMP $flatten\eng[0].u_core.$procmux$2955_CMP \eng[0].srst \eng[0].run } = 12'100001100001
+    Analyzing resource sharing with $flatten\eng[0].u_core.$shl$src/pe_core.v:61$19 ($shl):
+      Found 6 activation_patterns using ctrl signal { \eng[0].u_core.imem_data [1] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:162$276_Y $flatten\eng[0].u_core.$eq$src/pe_core.v:169$281_Y $flatten\eng[0].u_core.$logic_and$src/pe_core.v:174$317_Y $flatten\eng[0].u_core.$ne$src/pe_core.v:178$324_Y $flatten\eng[0].u_core.$0\crc_step$func$src/pe_core.v:82$11.fb[0:0]$391 $flatten\eng[0].u_core.$0\crc_step$func$src/pe_core.v:83$12.fb[0:0]$407 $flatten\eng[0].u_core.$procmux$1577_CMP $flatten\eng[0].u_core.$procmux$1802_CMP $flatten\eng[0].u_core.$procmux$1803_CMP $flatten\eng[0].u_core.$procmux$2557_CMP \eng[0].srst \eng[0].run }.
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$48: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:162$276_Y $flatten\eng[0].u_core.$procmux$1802_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$48: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:108$77_Y $flatten\eng[0].u_core.$procmux$1802_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$48: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:108$75_Y $flatten\eng[0].u_core.$procmux$1802_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$48: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:109$78_Y $flatten\eng[0].u_core.$procmux$1802_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$48: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$procmux$1802_CMP $flatten\eng[0].u_core.$procmux$2742_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$48: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$procmux$1802_CMP $flatten\eng[0].u_core.$procmux$2955_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$48: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$procmux$1802_CMP $flatten\eng[0].u_core.$procmux$2954_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:61$19: { \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:162$276_Y $flatten\eng[0].u_core.$procmux$1802_CMP \eng[0].srst \eng[0].run } = 5'01101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:61$19: { \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:169$281_Y $flatten\eng[0].u_core.$logic_and$src/pe_core.v:174$317_Y $flatten\eng[0].u_core.$ne$src/pe_core.v:178$324_Y $flatten\eng[0].u_core.$procmux$2557_CMP \eng[0].srst \eng[0].run } = 7'0001101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:61$19: { \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:169$281_Y $flatten\eng[0].u_core.$logic_and$src/pe_core.v:174$317_Y $flatten\eng[0].u_core.$ne$src/pe_core.v:178$324_Y $flatten\eng[0].u_core.$procmux$1577_CMP \eng[0].srst \eng[0].run } = 7'0001101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:61$19: { \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:169$281_Y $flatten\eng[0].u_core.$logic_and$src/pe_core.v:174$317_Y $flatten\eng[0].u_core.$ne$src/pe_core.v:178$324_Y $flatten\eng[0].u_core.$0\crc_step$func$src/pe_core.v:83$12.fb[0:0]$407 $flatten\eng[0].u_core.$procmux$2557_CMP \eng[0].srst \eng[0].run } = 8'00011101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:61$19: { \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:169$281_Y $flatten\eng[0].u_core.$logic_and$src/pe_core.v:174$317_Y $flatten\eng[0].u_core.$ne$src/pe_core.v:178$324_Y $flatten\eng[0].u_core.$0\crc_step$func$src/pe_core.v:82$11.fb[0:0]$391 $flatten\eng[0].u_core.$procmux$1577_CMP \eng[0].srst \eng[0].run } = 8'00011101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:61$19: { \eng[0].u_core.imem_data [1] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:162$276_Y $flatten\eng[0].u_core.$procmux$1803_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Size of SAT problem: 29 cells, 328 variables, 940 clauses
+      According to the SAT solver this pair of cells can not be shared.
+      Model from SAT solver: { \eng[0].u_core.imem_data [5] \eng[0].u_core.imem_data [1] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:108$75_Y $flatten\eng[0].u_core.$eq$src/pe_core.v:108$77_Y $flatten\eng[0].u_core.$eq$src/pe_core.v:109$78_Y $flatten\eng[0].u_core.$eq$src/pe_core.v:162$276_Y $flatten\eng[0].u_core.$eq$src/pe_core.v:169$281_Y $flatten\eng[0].u_core.$logic_and$src/pe_core.v:174$317_Y $flatten\eng[0].u_core.$ne$src/pe_core.v:178$324_Y $flatten\eng[0].u_core.$0\crc_step$func$src/pe_core.v:82$11.fb[0:0]$391 $flatten\eng[0].u_core.$0\crc_step$func$src/pe_core.v:83$12.fb[0:0]$407 $flatten\eng[0].u_core.$procmux$1577_CMP $flatten\eng[0].u_core.$procmux$1802_CMP $flatten\eng[0].u_core.$procmux$1803_CMP $flatten\eng[0].u_core.$procmux$2557_CMP $flatten\eng[0].u_core.$procmux$2742_CMP $flatten\eng[0].u_core.$procmux$2954_CMP $flatten\eng[0].u_core.$procmux$2955_CMP \eng[0].srst \eng[0].run } = 21'100000100100010000001
+  Analyzing resource sharing options for $flatten\eng[0].u_core.$shl$src/pe_core.v:98$49 ($shl):
+    Found 7 activation_patterns using ctrl signal { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:108$75_Y $flatten\eng[0].u_core.$eq$src/pe_core.v:108$77_Y $flatten\eng[0].u_core.$eq$src/pe_core.v:109$78_Y $flatten\eng[0].u_core.$eq$src/pe_core.v:162$276_Y $flatten\eng[0].u_core.$procmux$1802_CMP $flatten\eng[0].u_core.$procmux$2742_CMP $flatten\eng[0].u_core.$procmux$2954_CMP $flatten\eng[0].u_core.$procmux$2955_CMP \eng[0].srst \eng[0].run }.
+    Found 1 candidates: $flatten\eng[0].u_core.$shl$src/pe_core.v:61$19
+    Analyzing resource sharing with $flatten\eng[0].u_core.$shl$src/pe_core.v:61$19 ($shl):
+      Found 6 activation_patterns using ctrl signal { \eng[0].u_core.imem_data [1] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:162$276_Y $flatten\eng[0].u_core.$eq$src/pe_core.v:169$281_Y $flatten\eng[0].u_core.$logic_and$src/pe_core.v:174$317_Y $flatten\eng[0].u_core.$ne$src/pe_core.v:178$324_Y $flatten\eng[0].u_core.$0\crc_step$func$src/pe_core.v:82$11.fb[0:0]$391 $flatten\eng[0].u_core.$0\crc_step$func$src/pe_core.v:83$12.fb[0:0]$407 $flatten\eng[0].u_core.$procmux$1577_CMP $flatten\eng[0].u_core.$procmux$1802_CMP $flatten\eng[0].u_core.$procmux$1803_CMP $flatten\eng[0].u_core.$procmux$2557_CMP \eng[0].srst \eng[0].run }.
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$49: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$procmux$1802_CMP $flatten\eng[0].u_core.$procmux$2954_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$49: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$procmux$1802_CMP $flatten\eng[0].u_core.$procmux$2955_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$49: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$procmux$1802_CMP $flatten\eng[0].u_core.$procmux$2742_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$49: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:109$78_Y $flatten\eng[0].u_core.$procmux$1802_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$49: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:108$75_Y $flatten\eng[0].u_core.$procmux$1802_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$49: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:108$77_Y $flatten\eng[0].u_core.$procmux$1802_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:98$49: { \eng[0].u_core.imem_data [5] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:162$276_Y $flatten\eng[0].u_core.$procmux$1802_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:61$19: { \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:162$276_Y $flatten\eng[0].u_core.$procmux$1802_CMP \eng[0].srst \eng[0].run } = 5'01101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:61$19: { \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:169$281_Y $flatten\eng[0].u_core.$logic_and$src/pe_core.v:174$317_Y $flatten\eng[0].u_core.$ne$src/pe_core.v:178$324_Y $flatten\eng[0].u_core.$procmux$2557_CMP \eng[0].srst \eng[0].run } = 7'0001101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:61$19: { \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:169$281_Y $flatten\eng[0].u_core.$logic_and$src/pe_core.v:174$317_Y $flatten\eng[0].u_core.$ne$src/pe_core.v:178$324_Y $flatten\eng[0].u_core.$procmux$1577_CMP \eng[0].srst \eng[0].run } = 7'0001101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:61$19: { \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:169$281_Y $flatten\eng[0].u_core.$logic_and$src/pe_core.v:174$317_Y $flatten\eng[0].u_core.$ne$src/pe_core.v:178$324_Y $flatten\eng[0].u_core.$0\crc_step$func$src/pe_core.v:83$12.fb[0:0]$407 $flatten\eng[0].u_core.$procmux$2557_CMP \eng[0].srst \eng[0].run } = 8'00011101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:61$19: { \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:169$281_Y $flatten\eng[0].u_core.$logic_and$src/pe_core.v:174$317_Y $flatten\eng[0].u_core.$ne$src/pe_core.v:178$324_Y $flatten\eng[0].u_core.$0\crc_step$func$src/pe_core.v:82$11.fb[0:0]$391 $flatten\eng[0].u_core.$procmux$1577_CMP \eng[0].srst \eng[0].run } = 8'00011101
+      Activation pattern for cell $flatten\eng[0].u_core.$shl$src/pe_core.v:61$19: { \eng[0].u_core.imem_data [1] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:162$276_Y $flatten\eng[0].u_core.$procmux$1803_CMP \eng[0].srst \eng[0].run } = 6'101101
+      Size of SAT problem: 29 cells, 328 variables, 940 clauses
+      According to the SAT solver this pair of cells can not be shared.
+      Model from SAT solver: { \eng[0].u_core.imem_data [5] \eng[0].u_core.imem_data [1] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:108$75_Y $flatten\eng[0].u_core.$eq$src/pe_core.v:108$77_Y $flatten\eng[0].u_core.$eq$src/pe_core.v:109$78_Y $flatten\eng[0].u_core.$eq$src/pe_core.v:162$276_Y $flatten\eng[0].u_core.$eq$src/pe_core.v:169$281_Y $flatten\eng[0].u_core.$logic_and$src/pe_core.v:174$317_Y $flatten\eng[0].u_core.$ne$src/pe_core.v:178$324_Y $flatten\eng[0].u_core.$0\crc_step$func$src/pe_core.v:82$11.fb[0:0]$391 $flatten\eng[0].u_core.$0\crc_step$func$src/pe_core.v:83$12.fb[0:0]$407 $flatten\eng[0].u_core.$procmux$1577_CMP $flatten\eng[0].u_core.$procmux$1802_CMP $flatten\eng[0].u_core.$procmux$1803_CMP $flatten\eng[0].u_core.$procmux$2557_CMP $flatten\eng[0].u_core.$procmux$2742_CMP $flatten\eng[0].u_core.$procmux$2954_CMP $flatten\eng[0].u_core.$procmux$2955_CMP \eng[0].srst \eng[0].run } = 21'100000100100010000001
+  Analyzing resource sharing options for $flatten\eng[0].u_core.$shl$src/pe_core.v:61$19 ($shl):
+    Found 6 activation_patterns using ctrl signal { \eng[0].u_core.imem_data [1] \eng[0].u_core.halt $flatten\eng[0].u_core.$eq$src/pe_core.v:162$276_Y $flatten\eng[0].u_core.$eq$src/pe_core.v:169$281_Y $flatten\eng[0].u_core.$logic_and$src/pe_core.v:174$317_Y $flatten\eng[0].u_core.$ne$src/pe_core.v:178$324_Y $flatten\eng[0].u_core.$0\crc_step$func$src/pe_core.v:82$11.fb[0:0]$391 $flatten\eng[0].u_core.$0\crc_step$func$src/pe_core.v:83$12.fb[0:0]$407 $flatten\eng[0].u_core.$procmux$1577_CMP $flatten\eng[0].u_core.$procmux$1802_CMP $flatten\eng[0].u_core.$procmux$1803_CMP $flatten\eng[0].u_core.$procmux$2557_CMP \eng[0].srst \eng[0].run }.
+    No candidates found.
+
+6.16. Executing OPT pass (performing simple optimizations).
+
+6.16.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_pe16.
+<suppressed ~2 debug messages>
+
+6.16.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_pe16'.
+Computing hashes of 610 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Removed a total of 0 cells.
+
+6.16.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \tt_um_pe16..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~422 debug messages>
+
+6.16.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \tt_um_pe16.
+Performed a total of 0 changes.
+
+6.16.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_pe16'.
+Computing hashes of 610 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Removed a total of 0 cells.
+
+6.16.6. Executing OPT_DFF pass (perform DFF optimizations).
+
+6.16.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_pe16..
+Removed 3 unused cells and 7 unused wires.
+<suppressed ~4 debug messages>
+
+6.16.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_pe16.
+
+6.16.9. Rerunning OPT passes. (Maybe there is more to do..)
+
+6.16.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \tt_um_pe16..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~422 debug messages>
+
+6.16.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \tt_um_pe16.
+Performed a total of 0 changes.
+
+6.16.12. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_pe16'.
+Computing hashes of 607 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Removed a total of 0 cells.
+
+6.16.13. Executing OPT_DFF pass (perform DFF optimizations).
+
+6.16.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_pe16..
+
+6.16.15. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_pe16.
+
+6.16.16. Finished fast OPT passes. (There is nothing left to do.)
+
+6.17. Executing MEMORY pass.
+
+6.17.1. Executing OPT_MEM pass (optimize memories).
+Performed a total of 0 transformations.
+
+6.17.2. Executing OPT_MEM_PRIORITY pass (removing unnecessary memory write priority relations).
+Performed a total of 0 transformations.
+
+6.17.3. Executing OPT_MEM_FEEDBACK pass (finding memory read-to-write feedback paths).
+
+6.17.4. Executing MEMORY_BMUX2ROM pass (converting muxes to ROMs).
+
+6.17.5. Executing MEMORY_DFF pass (merging $dff cells to $memrd).
+
+6.17.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_pe16..
+
+6.17.7. Executing MEMORY_SHARE pass (consolidating $memrd/$memwr cells).
+
+6.17.8. Executing OPT_MEM_WIDEN pass (optimize memories where all ports are wide).
+Performed a total of 0 transformations.
+
+6.17.9. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_pe16..
+
+6.17.10. Executing MEMORY_COLLECT pass (generating $mem cells).
+
+6.18. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_pe16..
+
+6.19. Executing OPT pass (performing simple optimizations).
+
+6.19.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_pe16.
+<suppressed ~169 debug messages>
+
+6.19.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_pe16'.
+Computing hashes of 500 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Removed a total of 0 cells.
+
+6.19.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+6.19.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_pe16..
+Removed 2 unused cells and 127 unused wires.
+<suppressed ~3 debug messages>
+
+6.19.5. Finished fast OPT passes.
+
+6.20. Executing MEMORY_MAP pass (converting memories to logic and flip-flops).
+
+6.21. Executing OPT pass (performing simple optimizations).
+
+6.21.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_pe16.
+<suppressed ~2 debug messages>
+
+6.21.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_pe16'.
+Computing hashes of 498 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Computing hashes of 497 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+<suppressed ~3 debug messages>
+Removed a total of 1 cells.
+
+6.21.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \tt_um_pe16..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~276 debug messages>
+
+6.21.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \tt_um_pe16.
+    Consolidated identical input bits for $mux cell $procmux$751:
+      Old ports: A={ \rd_sh [14:0] 1'0 }, B={ \rd_word [14:0] 1'0 }, Y=$procmux$751_Y
+      New ports: A=\rd_sh [14:0], B=\rd_word [14:0], Y=$procmux$751_Y [15:1]
+      New connections: $procmux$751_Y [0] = 1'0
+    Consolidated identical input bits for $mux cell $procmux$726:
+      Old ports: A={ \sh16 \mosi_s [1] }, B={ 8'00000000 \sh8 \mosi_s [1] }, Y=$procmux$726_Y
+      New ports: A=\sh16, B={ 8'00000000 \sh8 }, Y=$procmux$726_Y [15:1]
+      New connections: $procmux$726_Y [0] = \mosi_s [1]
+  Optimizing cells in module \tt_um_pe16.
+Performed a total of 2 changes.
+
+6.21.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_pe16'.
+Computing hashes of 497 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Removed a total of 0 cells.
+
+6.21.6. Executing OPT_SHARE pass.
+    Found cells that share an operand and can be merged by moving the $pmux $flatten\eng[0].u_core.$procmux$2695 in front of them:
+        $auto$opt_expr.cc:277:group_cell_inputs$3849
+        $auto$opt_expr.cc:277:group_cell_inputs$3852
+
+6.21.7. Executing OPT_DFF pass (perform DFF optimizations).
+Setting constant 0-bit at position 0 on $auto$ff.cc:337:slice$3475 ($adffe) from module tt_um_pe16.
+
+6.21.8. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_pe16..
+Removed 0 unused cells and 1 unused wires.
+<suppressed ~1 debug messages>
+
+6.21.9. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_pe16.
+<suppressed ~28 debug messages>
+
+6.21.10. Rerunning OPT passes. (Maybe there is more to do..)
+
+6.21.11. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \tt_um_pe16..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~282 debug messages>
+
+6.21.12. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \tt_um_pe16.
+Performed a total of 0 changes.
+
+6.21.13. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_pe16'.
+Computing hashes of 497 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Removed a total of 0 cells.
+
+6.21.14. Executing OPT_SHARE pass.
+
+6.21.15. Executing OPT_DFF pass (perform DFF optimizations).
+
+6.21.16. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_pe16..
+
+6.21.17. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_pe16.
+
+6.21.18. Finished fast OPT passes. (There is nothing left to do.)
+
+6.22. Executing TECHMAP pass (map to technology primitives).
+
+6.22.1. Executing Verilog-2005 frontend: /share/techmap.v
+Parsing Verilog input from `/share/techmap.v' to AST representation.
+Generating RTLIL representation for module `\_90_simplemap_bool_ops'.
+Generating RTLIL representation for module `\_90_simplemap_reduce_ops'.
+Generating RTLIL representation for module `\_90_simplemap_logic_ops'.
+Generating RTLIL representation for module `\_90_simplemap_compare_ops'.
+Generating RTLIL representation for module `\_90_simplemap_various'.
+Generating RTLIL representation for module `\_90_simplemap_registers'.
+Generating RTLIL representation for module `\_90_shift_ops_shr_shl_sshl_sshr'.
+Generating RTLIL representation for module `\_90_shift_shiftx'.
+Generating RTLIL representation for module `\_90_fa'.
+Generating RTLIL representation for module `\_90_lcu_brent_kung'.
+Generating RTLIL representation for module `\_90_alu'.
+Generating RTLIL representation for module `\_90_macc'.
+Generating RTLIL representation for module `\_90_alumacc'.
+Generating RTLIL representation for module `$__div_mod_u'.
+Generating RTLIL representation for module `$__div_mod_trunc'.
+Generating RTLIL representation for module `\_90_div'.
+Generating RTLIL representation for module `\_90_mod'.
+Generating RTLIL representation for module `$__div_mod_floor'.
+Generating RTLIL representation for module `\_90_divfloor'.
+Generating RTLIL representation for module `\_90_modfloor'.
+Generating RTLIL representation for module `\_90_pow'.
+Generating RTLIL representation for module `\_90_demux'.
+Generating RTLIL representation for module `\_90_lut'.
+Generating RTLIL representation for module `$connect'.
+Generating RTLIL representation for module `$input_port'.
+Successfully finished Verilog frontend.
+
+6.22.2. Continuing TECHMAP pass.
+Using extmapper simplemap for cells of type $adffe.
+Using extmapper simplemap for cells of type $mux.
+Using extmapper simplemap for cells of type $xor.
+Using extmapper simplemap for cells of type $and.
+Using extmapper simplemap for cells of type $not.
+Using template $paramod$3ef7d3dd227da7627a99c5e5a6a4deb817573e39\_90_alu for cells of type $alu.
+Using template $paramod$f30f8fc2e30bd83d28cb1ad43b9d9ec083109075\_90_alu for cells of type $alu.
+Using template $paramod$2af30114e9bd4ccb04dad757b3f0a8f6bf0615b0\_90_alu for cells of type $alu.
+Using template $paramod$025d767fc934a3e7d59a671de523743ebaa07759\_90_alu for cells of type $alu.
+Using template $paramod$c3cd1564c35d873179656addd6052d7ea8b6d991\_90_alu for cells of type $alu.
+Using template $paramod$175e67c02b86e96b1288b9dc100122520d7240d8\_90_alu for cells of type $alu.
+Using template $paramod$32a7b7b86c07519b7537abc18e96f0331f97914d\_90_alu for cells of type $alu.
+Using template $paramod$a1665ef28c749ebcdbe9aecd466e644647b56463\_90_alu for cells of type $alu.
+Using extmapper simplemap for cells of type $or.
+Using extmapper simplemap for cells of type $reduce_and.
+Using template $paramod$5e6c8fc6a3c38b75d4f7296fe88fe2272db87204\_90_alu for cells of type $alu.
+Using extmapper simplemap for cells of type $reduce_or.
+Using template $paramod$78e969f2586efcf3a5b0b0440bcca0db83d5cca2\_90_alu for cells of type $alu.
+Using template $paramod$ba698a254f9a5947e85cbe7beae6b161eefc5386\_90_alu for cells of type $alu.
+Using extmapper maccmap for cells of type $macc_v2.
+  add \eng[0].u_core.txc (3 bits, unsigned)
+  sub \eng[0].u_core.eng_pop (1 bits, unsigned)
+  add \eng[0].u_core.h_push (1 bits, unsigned)
+  packed 1 (1) bits / 1 words into adder tree
+  add \eng[0].u_core.rxc (3 bits, unsigned)
+  sub \eng[0].u_core.h_pop (1 bits, unsigned)
+  add \eng[0].u_core.eng_push (1 bits, unsigned)
+  packed 1 (1) bits / 1 words into adder tree
+Using extmapper simplemap for cells of type $dffe.
+Using extmapper simplemap for cells of type $reduce_bool.
+Using extmapper simplemap for cells of type $ne.
+Using extmapper simplemap for cells of type $logic_or.
+Using extmapper simplemap for cells of type $eq.
+Using extmapper simplemap for cells of type $logic_not.
+Using extmapper simplemap for cells of type $logic_and.
+Using template $paramod$constmap:46dfec7a04e5fbe78275d4107cf88bc9d5835cf2$paramod$52e51ff36a8e73add41f917201005a24039a9ece\_90_shift_shiftx for cells of type $shiftx.
+Using extmapper simplemap for cells of type $adff.
+Using extmapper simplemap for cells of type $pmux.
+Using template $paramod$constmap:53dd6ada2d45a8116ef2136a4476a16275b4fd66$paramod$962bb79c2a50a422516483c1c9c06046761917ac\_90_shift_shiftx for cells of type $shiftx.
+Using template $paramod$constmap:ed202111594f0a1b622ac8dc4bd7c990ea27025c$paramod$40ccfd5a7f1418017a9af25543d0c43a198b5946\_90_shift_shiftx for cells of type $shift.
+Analyzing pattern of constant bits for this cell:
+  Constant input on bit 0 of port A: 1'1
+Creating constmapped module `$paramod$constmap:aaa79bdfe7451deca7ae697c0784fd1c184bd8f2$paramod$40ccfd5a7f1418017a9af25543d0c43a198b5946\_90_shift_shiftx'.
+
+6.22.40. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module $paramod$constmap:aaa79bdfe7451deca7ae697c0784fd1c184bd8f2$paramod$40ccfd5a7f1418017a9af25543d0c43a198b5946\_90_shift_shiftx..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+    dead port 2/2 on $mux $procmux$7990.
+    dead port 2/2 on $mux $procmux$7996.
+    dead port 2/2 on $mux $procmux$8002.
+Removed 3 multiplexer ports.
+<suppressed ~1113 debug messages>
+
+6.22.41. Executing OPT_EXPR pass (perform const folding).
+Optimizing module $paramod$constmap:aaa79bdfe7451deca7ae697c0784fd1c184bd8f2$paramod$40ccfd5a7f1418017a9af25543d0c43a198b5946\_90_shift_shiftx.
+<suppressed ~2 debug messages>
+Removed 0 unused cells and 9 unused wires.
+Using template $paramod$constmap:aaa79bdfe7451deca7ae697c0784fd1c184bd8f2$paramod$40ccfd5a7f1418017a9af25543d0c43a198b5946\_90_shift_shiftx for cells of type $shift.
+Using template $paramod$constmap:8876c1e1fa289f4793438d4e34d232728e6a9746$paramod$92adee9538f2381d8e5006822c900eb986d754e8\_90_shift_shiftx for cells of type $shiftx.
+Using template $paramod$constmap:0f24df289edf886cd57ffae38e09d1c0c42aecd5$paramod$b1f8e9a58fee383a65180922397f7058048191fe\_90_shift_ops_shr_shl_sshl_sshr for cells of type $shl.
+Analyzing pattern of constant bits for this cell:
+Creating constmapped module `$paramod$constmap:11108807bb702cebf289c0f9a6dadb26a1635fe0$paramod$b1f8e9a58fee383a65180922397f7058048191fe\_90_shift_ops_shr_shl_sshl_sshr'.
+
+6.22.52. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module $paramod$constmap:11108807bb702cebf289c0f9a6dadb26a1635fe0$paramod$b1f8e9a58fee383a65180922397f7058048191fe\_90_shift_ops_shr_shl_sshl_sshr..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Removed 0 multiplexer ports.
+<suppressed ~471 debug messages>
+
+6.22.53. Executing OPT_EXPR pass (perform const folding).
+Optimizing module $paramod$constmap:11108807bb702cebf289c0f9a6dadb26a1635fe0$paramod$b1f8e9a58fee383a65180922397f7058048191fe\_90_shift_ops_shr_shl_sshl_sshr.
+<suppressed ~64 debug messages>
+Removed 0 unused cells and 9 unused wires.
+Using template $paramod$constmap:11108807bb702cebf289c0f9a6dadb26a1635fe0$paramod$b1f8e9a58fee383a65180922397f7058048191fe\_90_shift_ops_shr_shl_sshl_sshr for cells of type $shl.
+Analyzing pattern of constant bits for this cell:
+  Constant input on bit 0 of port A: 1'0
+  Constant input on bit 1 of port A: 1'1
+  Constant input on bit 2 of port A: 1'1
+  Constant input on bit 3 of port A: 1'1
+  Constant input on bit 4 of port A: 1'1
+  Constant input on bit 5 of port A: 1'1
+  Constant input on bit 6 of port A: 1'1
+  Constant input on bit 7 of port A: 1'1
+  Constant input on bit 8 of port A: 1'1
+  Constant input on bit 9 of port A: 1'1
+  Constant input on bit 10 of port A: 1'1
+  Constant input on bit 11 of port A: 1'1
+  Constant input on bit 12 of port A: 1'1
+  Constant input on bit 13 of port A: 1'1
+  Constant input on bit 14 of port A: 1'1
+  Constant input on bit 15 of port A: 1'1
+Creating constmapped module `$paramod$constmap:d066b7d7f36181cea60100a799b641f3b3526694$paramod$b1f8e9a58fee383a65180922397f7058048191fe\_90_shift_ops_shr_shl_sshl_sshr'.
+
+6.22.54. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module $paramod$constmap:d066b7d7f36181cea60100a799b641f3b3526694$paramod$b1f8e9a58fee383a65180922397f7058048191fe\_90_shift_ops_shr_shl_sshl_sshr..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Removed 0 multiplexer ports.
+<suppressed ~22 debug messages>
+
+6.22.55. Executing OPT_EXPR pass (perform const folding).
+Optimizing module $paramod$constmap:d066b7d7f36181cea60100a799b641f3b3526694$paramod$b1f8e9a58fee383a65180922397f7058048191fe\_90_shift_ops_shr_shl_sshl_sshr.
+<suppressed ~102 debug messages>
+Removed 0 unused cells and 9 unused wires.
+Using template $paramod$constmap:d066b7d7f36181cea60100a799b641f3b3526694$paramod$b1f8e9a58fee383a65180922397f7058048191fe\_90_shift_ops_shr_shl_sshl_sshr for cells of type $shl.
+Using template $paramod\_90_fa\WIDTH=32'00000000000000000000000000000011 for cells of type $fa.
+Using extmapper simplemap for cells of type $pos.
+Using template $paramod\_90_fa\WIDTH=32'00000000000000000000000000010001 for cells of type $fa.
+Using template $paramod\_90_lcu_brent_kung\WIDTH=32'00000000000000000000000000010001 for cells of type $lcu.
+Using template $paramod\_90_lcu_brent_kung\WIDTH=32'00000000000000000000000000000011 for cells of type $lcu.
+Using template $paramod\_90_fa\WIDTH=32'00000000000000000000000000000100 for cells of type $fa.
+Using template $paramod\_90_lcu_brent_kung\WIDTH=32'00000000000000000000000000000100 for cells of type $lcu.
+Using template $paramod\_90_fa\WIDTH=32'00000000000000000000000000010000 for cells of type $fa.
+Using template $paramod\_90_lcu_brent_kung\WIDTH=32'00000000000000000000000000010000 for cells of type $lcu.
+Using template $paramod\_90_fa\WIDTH=32'00000000000000000000000000001000 for cells of type $fa.
+Using template $paramod\_90_lcu_brent_kung\WIDTH=32'00000000000000000000000000001000 for cells of type $lcu.
+Using template $paramod\_90_fa\WIDTH=32'00000000000000000000000000000010 for cells of type $fa.
+Using template $paramod\_90_lcu_brent_kung\WIDTH=32'00000000000000000000000000000010 for cells of type $lcu.
+No more expansions possible.
+<suppressed ~1429 debug messages>
+
+6.23. Executing OPT pass (performing simple optimizations).
+
+6.23.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_pe16.
+<suppressed ~2166 debug messages>
+
+6.23.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_pe16'.
+Computing hashes of 3988 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Computing hashes of 3693 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Computing hashes of 3648 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Computing hashes of 3637 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Computing hashes of 3627 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Computing hashes of 3620 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Computing hashes of 3616 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Computing hashes of 3615 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+<suppressed ~1119 debug messages>
+Removed a total of 373 cells.
+
+6.23.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+6.23.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_pe16..
+Removed 226 unused cells and 1835 unused wires.
+<suppressed ~228 debug messages>
+
+6.23.5. Finished fast OPT passes.
+
+6.24. Executing ABC pass (technology mapping using ABC).
+
+6.24.1. Extracting gate netlist of module `\tt_um_pe16' to `<abc-temp-dir>/input.blif'..
+
+6.24.1.1. Executed ABC.
+Extracted 2978 gates and 3378 wires to a netlist network with 398 inputs and 243 outputs.
+Running ABC script: <abc-temp-dir>/abc.script
+
+6.24.1.2. Re-integrating ABC results.
+ABC RESULTS:               AND cells:      694
+ABC RESULTS:            ANDNOT cells:      123
+ABC RESULTS:               MUX cells:      201
+ABC RESULTS:              NAND cells:      766
+ABC RESULTS:               NOR cells:       59
+ABC RESULTS:               NOT cells:        9
+ABC RESULTS:                OR cells:      209
+ABC RESULTS:             ORNOT cells:      105
+ABC RESULTS:              XNOR cells:      105
+ABC RESULTS:               XOR cells:       15
+ABC RESULTS:        internal signals:     2737
+ABC RESULTS:           input signals:      398
+ABC RESULTS:          output signals:      243
+Removing temp directory.
+Removing global temp directory.
+
+6.25. Executing OPT pass (performing simple optimizations).
+
+6.25.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module tt_um_pe16.
+<suppressed ~9 debug messages>
+
+6.25.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\tt_um_pe16'.
+Computing hashes of 2697 cells of `\tt_um_pe16'.
+Finding duplicate cells in `\tt_um_pe16'.
+Removed a total of 0 cells.
+
+6.25.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+6.25.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_pe16..
+Removed 0 unused cells and 1812 unused wires.
+<suppressed ~40 debug messages>
+
+6.25.5. Finished fast OPT passes.
+
+6.26. Executing HIERARCHY pass (managing design hierarchy).
+Attribute `top' found on module `tt_um_pe16'. Setting top module to tt_um_pe16.
+
+6.26.1. Analyzing design hierarchy..
+Top module:  \tt_um_pe16
+
+6.26.2. Analyzing design hierarchy..
+Top module:  \tt_um_pe16
+Removed 0 unused modules.
+
+6.27. Printing statistics.
+
+=== tt_um_pe16 ===
+
+        +----------Local Count, excluding submodules.
+        | 
+     2390 wires
+     3185 wire bits
+      125 public wires
+      908 public wire bits
+        8 ports
+       43 port bits
+     2697 cells
+      123   $_ANDNOT_
+      694   $_AND_
+      223   $_DFFE_PN0P_
+        6   $_DFFE_PN1P_
+      128   $_DFFE_PP_
+       49   $_DFF_PN0_
+        2   $_DFF_PN1_
+      201   $_MUX_
+      766   $_NAND_
+       59   $_NOR_
+        9   $_NOT_
+      105   $_ORNOT_
+      209   $_OR_
+      105   $_XNOR_
+       15   $_XOR_
+        2   $scopeinfo
+        1   RM_IHPSG13_1P_256x16_c2_bm_bist
+
+6.28. Executing CHECK pass (checking for obvious problems).
+Checking module tt_um_pe16...
+Found and reported 0 problems.
+
+7. Executing DFFLIBMAP pass (mapping DFF/DLATCH cells to sequential cells from liberty file).
+  cell sg13cmos5l_dfrbpq_1 (noninv, pins=4, area=48.99) is a direct match for cell type $_DFF_PN0_.
+  cell sg13cmos5l_dlhq_1 (noninv, pins=3, area=30.84) is a direct match for cell type $_DLATCH_P_.
+  cell sg13cmos5l_dllrq_1 (noninv, pins=4, area=29.03) is a direct match for cell type $_DLATCH_NN0_.
+  cell sg13cmos5l_dlhrq_1 (noninv, pins=4, area=27.22) is a direct match for cell type $_DLATCH_PN0_.
+  final dff/dlatch cell mappings:
+    unmapped dff/dlatch cell: $_DFF_N_
+    unmapped dff/dlatch cell: $_DFF_P_
+    unmapped dff/dlatch cell: $_DFF_NN0_
+    unmapped dff/dlatch cell: $_DFF_NN1_
+    unmapped dff/dlatch cell: $_DFF_NP0_
+    unmapped dff/dlatch cell: $_DFF_NP1_
+    \sg13cmos5l_dfrbpq_1 _DFF_PN0_ (.CLK( C), .D( D), .Q( Q), .RESET_B( R));
+    unmapped dff/dlatch cell: $_DFF_PN1_
+    unmapped dff/dlatch cell: $_DFF_PP0_
+    unmapped dff/dlatch cell: $_DFF_PP1_
+    unmapped dff/dlatch cell: $_DFFE_NN_
+    unmapped dff/dlatch cell: $_DFFE_NP_
+    unmapped dff/dlatch cell: $_DFFE_PN_
+    unmapped dff/dlatch cell: $_DFFE_PP_
+    unmapped dff/dlatch cell: $_DFFSR_NNN_
+    unmapped dff/dlatch cell: $_DFFSR_NNP_
+    unmapped dff/dlatch cell: $_DFFSR_NPN_
+    unmapped dff/dlatch cell: $_DFFSR_NPP_
+    unmapped dff/dlatch cell: $_DFFSR_PNN_
+    unmapped dff/dlatch cell: $_DFFSR_PNP_
+    unmapped dff/dlatch cell: $_DFFSR_PPN_
+    unmapped dff/dlatch cell: $_DFFSR_PPP_
+    unmapped dff/dlatch cell: $_DLATCH_N_
+    \sg13cmos5l_dlhq_1 _DLATCH_P_ (.D( D), .GATE( E), .Q( Q));
+    \sg13cmos5l_dllrq_1 _DLATCH_NN0_ (.D( D), .GATE_N( E), .Q( Q), .RESET_B( R));
+    unmapped dff/dlatch cell: $_DLATCH_NN1_
+    unmapped dff/dlatch cell: $_DLATCH_NP0_
+    unmapped dff/dlatch cell: $_DLATCH_NP1_
+    \sg13cmos5l_dlhrq_1 _DLATCH_PN0_ (.D( D), .GATE( E), .Q( Q), .RESET_B( R));
+    unmapped dff/dlatch cell: $_DLATCH_PN1_
+    unmapped dff/dlatch cell: $_DLATCH_PP0_
+    unmapped dff/dlatch cell: $_DLATCH_PP1_
+    unmapped dff/dlatch cell: $_DLATCHSR_NNN_
+    unmapped dff/dlatch cell: $_DLATCHSR_NNP_
+    unmapped dff/dlatch cell: $_DLATCHSR_NPN_
+    unmapped dff/dlatch cell: $_DLATCHSR_NPP_
+    unmapped dff/dlatch cell: $_DLATCHSR_PNN_
+    unmapped dff/dlatch cell: $_DLATCHSR_PNP_
+    unmapped dff/dlatch cell: $_DLATCHSR_PPN_
+    unmapped dff/dlatch cell: $_DLATCHSR_PPP_
+
+7.1. Executing DFFLEGALIZE pass (convert FFs and LATCHes to types supported by the target).
+<suppressed ~4 debug messages>
+Mapping DFF/DLATCH cells in module `\tt_um_pe16':
+  mapped 408 $_DFF_PN0_ cells to \sg13cmos5l_dfrbpq_1 cells.
+
+8. Executing ABC pass (technology mapping using ABC).
+
+8.1. Extracting gate netlist of module `\tt_um_pe16' to `<abc-temp-dir>/input.blif'..
+
+8.1.1. Executed ABC.
+Extracted 2659 gates and 3075 wires to a netlist network with 416 inputs and 396 outputs.
+Running ABC script: <abc-temp-dir>/abc.script
+
+8.1.2. Re-integrating ABC results.
+ABC RESULTS:   sg13cmos5l_a21o_1 cells:       68
+ABC RESULTS:   sg13cmos5l_a21oi_1 cells:      234
+ABC RESULTS:   sg13cmos5l_a221oi_1 cells:       58
+ABC RESULTS:   sg13cmos5l_a22oi_1 cells:      181
+ABC RESULTS:   sg13cmos5l_and2_1 cells:       43
+ABC RESULTS:   sg13cmos5l_and3_1 cells:       15
+ABC RESULTS:   sg13cmos5l_and4_1 cells:        6
+ABC RESULTS:   sg13cmos5l_buf_1 cells:        1
+ABC RESULTS:   sg13cmos5l_inv_1 cells:       91
+ABC RESULTS:   sg13cmos5l_mux2_1 cells:      250
+ABC RESULTS:   sg13cmos5l_mux4_1 cells:        1
+ABC RESULTS:   sg13cmos5l_nand2_1 cells:      237
+ABC RESULTS:   sg13cmos5l_nand2b_1 cells:       69
+ABC RESULTS:   sg13cmos5l_nand3_1 cells:       70
+ABC RESULTS:   sg13cmos5l_nand3b_1 cells:        4
+ABC RESULTS:   sg13cmos5l_nand4_1 cells:       16
+ABC RESULTS:   sg13cmos5l_nor2_1 cells:      137
+ABC RESULTS:   sg13cmos5l_nor2b_1 cells:       65
+ABC RESULTS:   sg13cmos5l_nor3_1 cells:       52
+ABC RESULTS:   sg13cmos5l_nor4_1 cells:       27
+ABC RESULTS:   sg13cmos5l_o21ai_1 cells:      277
+ABC RESULTS:   sg13cmos5l_or2_1 cells:       12
+ABC RESULTS:   sg13cmos5l_or3_1 cells:        6
+ABC RESULTS:   sg13cmos5l_or4_1 cells:        3
+ABC RESULTS:   sg13cmos5l_xnor2_1 cells:       50
+ABC RESULTS:   sg13cmos5l_xor2_1 cells:       46
+ABC RESULTS:        internal signals:     2263
+ABC RESULTS:           input signals:      416
+ABC RESULTS:          output signals:      396
+Removing temp directory.
+Removing global temp directory.
+
+9. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \tt_um_pe16..
+Removed 0 unused cells and 3056 unused wires.
+<suppressed ~2 debug messages>
+
+10. Printing statistics.
+
+=== tt_um_pe16 ===
+
+        +----------Local Count, excluding submodules.
+        |        +-Local Area, excluding submodules.
+        |        | 
+     2142        - wires
+     2924        - wire bits
+      124        - public wires
+      906        - public wire bits
+        8        - ports
+       43        - port bits
+     2430 4.12E+04 cells
+        2        -   $scopeinfo
+        1        -   RM_IHPSG13_1P_256x16_c2_bm_bist
+       68  863.654   sg13cmos5l_a21o_1
+      234 2.12E+03   sg13cmos5l_a21oi_1
+       58  841.882   sg13cmos5l_a221oi_1
+      181 1.96E+03   sg13cmos5l_a22oi_1
+       43  390.096   sg13cmos5l_and2_1
+       15  190.512   sg13cmos5l_and3_1
+        6   87.091   sg13cmos5l_and4_1
+        1    7.258   sg13cmos5l_buf_1
+      408    2E+04   sg13cmos5l_dfrbpq_1
+       91  495.331   sg13cmos5l_inv_1
+      250     4536   sg13cmos5l_mux2_1
+        1   38.102   sg13cmos5l_mux4_1
+      237 1.72E+03   sg13cmos5l_nand2_1
+       69  625.968   sg13cmos5l_nand2b_1
+       70   635.04   sg13cmos5l_nand3_1
+        4   50.803   sg13cmos5l_nand3b_1
+       16  174.182   sg13cmos5l_nand4_1
+      137  994.291   sg13cmos5l_nor2_1
+       65   589.68   sg13cmos5l_nor2b_1
+       52  471.744   sg13cmos5l_nor3_1
+       27  293.933   sg13cmos5l_nor4_1
+      277 2.51E+03   sg13cmos5l_o21ai_1
+       12  108.864   sg13cmos5l_or2_1
+        6   76.205   sg13cmos5l_or3_1
+        3   43.546   sg13cmos5l_or4_1
+       50   725.76   sg13cmos5l_xnor2_1
+       46  667.699   sg13cmos5l_xor2_1
+
+   Area for cell type $scopeinfo is unknown!
+   Area for cell type \RM_IHPSG13_1P_256x16_c2_bm_bist is unknown!
+
+   Chip area for module '\tt_um_pe16': 41214.511800
+     of which used for sequential elements: 19987.430400 (48.50%)
+
+Warnings: 2 unique messages, 2 total
+End of script. Logfile hash: 4bef2d9f7d, time: 2.31s, user: 5.91s, system: 0.00s
+Yosys 0.69 (git sha1 9f75ca1f9, Release, Clang /workspace/YoWASP/yosys/wasi-sdk-33.0-x86_64-linux/share/cmake/../..//bin/clang++ 22.1.0)
+Time spent: 59% 2x abc (1 sec), 14% 44x opt_expr (0 sec), ...

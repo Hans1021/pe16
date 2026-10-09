@@ -1,0 +1,52 @@
+; I2C target at 7-bit address 0x42. SCL=0 SDA=1 open drain. cfg osr_lsb=0 isr_lsb=0.
+; Write [S 0x84 d P]: pushes d. Read [S 0x85 d NACK P]: sends d = TX word bits [15:8].
+        set pins 0
+        set oes 0
+idle:   wait 1 1             ; SDA high
+        wait 0 1             ; SDA falls
+        in peek 0            ; b = SCL
+        jmp b st             ; SCL high: START
+        jmp idle
+st:     wait 0 0
+        set ctl isr0
+        set x 6
+ab:     wait 1 0
+        in raw 1
+        wait 0 0
+        jmp x-- ab
+        wait 1 0
+        in peek 1            ; b = R/W
+        wait 0 0
+        mov x isr
+        set y 0x42
+        jmp x!=y idle
+        set oe 1 1           ; ACK
+        wait 1 0
+        wait 0 0
+        set oe 1 0
+        jmp b rd
+        set ctl isr0
+        set x 7
+db:     wait 1 0
+        in raw 1
+        wait 0 0
+        jmp x-- db
+        set oe 1 1           ; ACK
+        wait 1 0
+        wait 0 0
+        set oe 1 0
+        push
+        jmp waitp
+rd:     pull
+        mov osr ~osr
+        set x 7
+rdb:    out oe 1
+        wait 1 0
+        wait 0 0
+        jmp x-- rdb
+        set oe 1 0           ; release for controller ACK/NACK
+        wait 1 0
+        wait 0 0
+waitp:  wait 1 0
+        wait 1 1             ; STOP
+        jmp idle

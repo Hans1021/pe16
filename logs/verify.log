@@ -1,0 +1,14 @@
+== 2026-09-20 foreground regression after UART RX / USB RX latency fix and test changes
+ ** TESTS=25 PASS=25 FAIL=0 SKIP=0 31722690.02 154.65 205127.15 **
+ ** TESTS=25 PASS=25 FAIL=0 SKIP=0 31722690.02 158.29 200407.44 **
+ ** TESTS=25 PASS=25 FAIL=0 SKIP=0 31666530.02 147.40 214832.58 **
+(builds: behavioural 4 eng, IHP SRAM 4 eng, flip-flop 2 eng)
+== firmware mutation, run in batches under the 300 s tool limit
+uart_* 5/5, spi_controller 2/2, can_tx 2/2 (after the UART RX tolerance and slow SPI target changes)
+usb 2/2 (after the USB RX latency change); the other 26 mutants ran on unchanged firmware and tests: 26/26
+total 37/37
+== RTL, Lean model, synthesis: sources unchanged since the last full run (see VERIFICATION.md)
+== 2026-09-25 receiver tolerance sweeps and fixes
+UART +-5%; CAN +-0.7% (test frames) after latency compensation and stuff-bit hard sync; USB +0.4/-0.6%; 1553 -0.25/+0.7%
+full suite (behavioural, 4 engines): 25/25
+firmware mutants rerun for can_rx, usb_rx, mil1553_rx: all killed

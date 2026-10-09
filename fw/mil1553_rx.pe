@@ -1,0 +1,101 @@
+; MIL-STD-1553 word receiver. RX+ = pin 2, RX- = pin 3 (receiver outputs; both low = idle).
+; cfg isr_lsb 0. Samples each half-bit near its centre, checks sync shape, the mid-bit transition
+; of every bit, and odd parity. Pushes per word: the 16 data bits, then status:
+; 1 = command/status word, 2 = data word, 0x10 = Manchester error, 0x20 = parity error, 0x30 = bad sync.
+.equ H {ns(500)}
+idle:   in peek 2
+        jmp b cs0
+        in peek 3
+        jmp b ds0
+        jmp idle
+cs0:    set ctl sync
+        dly {H // 2 - 3}     ; half-bit centre, less the detection latency
+cs:     set y 1              ; t = 0.5 H into the sync
+        dly {H}
+        in peek 2
+        jmp b cs2
+        jmp serr
+cs2:    dly {3 * H}
+        in peek 3
+        jmp b body
+        jmp serr
+ds0:    set ctl sync
+        dly {H // 2 - 3}     ; half-bit centre, less the detection latency
+ds:     set y 2
+        dly {H}
+        in peek 3
+        jmp b ds2
+        jmp serr
+ds2:    dly {3 * H}
+        in peek 2
+        jmp b body
+        jmp serr
+body:   set ctl isr0
+        set x 15
+        dly {2 * H}          ; first half of bit 15
+bE:     in raw 2             ; value = level of the first half
+        jmp b oE
+        dly {H}
+        in peek 2            ; 0 needs a positive second half
+        jmp b zE
+        jmp merr
+zE:     dly {H}
+        jmp x-- bE
+        jmp pE
+oE:     dly {H}
+        in peek 3            ; 1 needs a negative second half
+        jmp b qE
+        jmp merr
+qE:     dly {H}
+        jmp x-- bO
+        jmp pO
+bO:     in raw 2
+        jmp b oO
+        dly {H}
+        in peek 2
+        jmp b zO
+        jmp merr
+zO:     dly {H}
+        jmp x-- bO
+        jmp pO
+oO:     dly {H}
+        in peek 3
+        jmp b qO
+        jmp merr
+qO:     dly {H}
+        jmp x-- bE
+        jmp pE
+pE:     in peek 2            ; even ones so far: parity must be 1
+        jmp b pE1
+        jmp perr
+pE1:    dly {H}
+        in peek 3
+        jmp b good
+        jmp merr
+pO:     in peek 2            ; parity must be 0
+        jmp b perr
+        dly {H}
+        in peek 2
+        jmp b good
+        jmp merr
+good:   push
+        mov isr y
+        push
+        dly {H}              ; 0.5 H into the next word position
+        in peek 2
+        jmp b cs
+        in peek 3
+        jmp b ds
+        jmp idle
+merr:   set x 0x10
+        jmp err
+perr:   set x 0x20
+        jmp err
+serr:   set x 0x30
+err:    push
+        mov isr x
+        push
+        set x 39             ; skip at least one word time, then look for a new sync
+es:     dly {H}
+        jmp x-- es
+        jmp idle

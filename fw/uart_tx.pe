@@ -1,0 +1,15 @@
+; UART 8N1 transmitter on pin 0. Bit period = 16 clocks (edit the DLY values).
+; Host: push one byte per word (LSB-first; cfg osr_lsb=1).
+        set oe 0 1
+        set pin 0 1
+top:    pull
+        set ctl sync
+        set pin 0 0          ; start bit
+        set x 7
+bit:    dly 16
+        out raw 0            ; data bit, LSB first
+        jmp x-- bit
+        dly 16
+        set pin 0 1          ; stop bit
+        dly 16
+        jmp top

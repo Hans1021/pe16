@@ -1,0 +1,61 @@
+; USB low-speed packet receiver. D- = pin 2, D+ = pin 3. Same cfg as usb_tx (nrzi, stuffing, CRC).
+; Host first pushes the CRC residue constant (0x800D for CRC16, 0x0C for CRC5 in this CRC unit).
+; Pushes: SYNC+PID word, data words (16 bits each, LSB first in arrival order), the last partial
+; word, the remaining-bit counter, then status (1 = CRC good). No clock recovery after SYNC.
+.equ T {bit(1500000)}
+        pull
+        mov y osr
+top:    set ctl isr0 stf
+        wait 1 2
+        in raw 2             ; rxl = J level
+        set ctl isr0
+        wait 0 2             ; first K of SYNC
+        set ctl sync
+        dly {T // 2 - 3}     ; bit centre, less the 3-clock edge-detection latency
+        in destuff 2
+        set x 14
+s1:     dly {T}
+        in destuff 2
+        jmp s s1
+        jmp x-- s1
+        push                 ; SYNC + PID
+        set ctl crc1 isr0
+        set x 15
+rb:     dly {T}
+        in peek 3            ; D+
+        jmp b dat            ; D+ high: K
+        in peek 2
+        jmp b dat            ; D- high: J
+        jmp eop              ; SE0
+dat:    in destuff 2
+        jmp s rb
+        jmp due usy          ; a stuff bit comes next: hard sync on its known edge
+        jmp x-- rb
+        push
+        set x 15
+        jmp rb
+usy:    in peek 2            ; b = current line level
+        jmp b us1
+        wait 1 2
+        jmp us2
+us1:    wait 0 2
+us2:    set ctl sync
+        dly {T // 2 - 3}
+        in destuff 2         ; the stuff bit itself
+        jmp x-- rb
+        push
+        set x 15
+        jmp rb
+eop:    push                 ; partial word
+        mov isr x
+        push                 ; remaining-bit counter
+        mov x crc
+        set ctl isr0
+        jmp x!=y bad
+        set x 1
+        jmp st
+bad:    set x 0
+st:     mov isr x
+        push
+        wait 1 2             ; back to J
+        jmp top

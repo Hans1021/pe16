@@ -1,0 +1,31 @@
+; CAN 2.0A/B frame transmitter on pin 6 (TXD, 0 = dominant). Bit rate 500 kb/s ({bit(500000)} clocks at 48 MHz).
+; cfg: poly=0x4599 crcw=14 (15-bit) osr_lsb=0 stuff_n=5 stuff_ones=0.
+; Host: push (nbits-1), then SOF..data bits MSB-first packed in 16-bit words.
+.equ T {bit(500000)}
+        set oe 6 1
+        set pin 6 1
+top:    pull
+        mov x osr            ; x = nbits-1
+        pull                 ; first payload word
+        set y 15
+        set ctl sync crc0 stf ov0
+bit:    dly {T}
+        out stuff 6          ; emits a stuff bit or the next payload bit (+CRC)
+        jmp s bit            ; stuff bit: payload bit not consumed yet
+        jmp x-- more
+        jmp crcf
+more:   jmp y-- bit
+        pull
+        set y 15
+        jmp bit
+crcf:   mov osr crc^         ; CRC15 left-justified, bit0 = 1 (CRC delimiter)
+        set x 15
+cb:     dly {T}
+        out stuff 6          ; 15 CRC bits then the delimiter, stuffed as required
+        jmp s cb
+        jmp x-- cb
+        set x 11             ; ACK slot + ACK delim + EOF(7) + intermission(3)
+tail:   dly {T}
+        set pin 6 1
+        jmp x-- tail
+        jmp top

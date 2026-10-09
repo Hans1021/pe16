@@ -1,0 +1,25 @@
+; WS2812 LED stream on pin 0: bit period 1.25 us, '0' = 0.4 us high, '1' = 0.8 us high. cfg osr_lsb=0 (GRB, MSB first).
+; Host streams 16-bit words; an empty FIFO holds the line low (latch/reset).
+.equ P {ns(1250)}
+.equ H0 {ns(400)}
+.equ H1 {ns(800)}
+        set oe 0 1
+        set pin 0 0
+        set x {P - H0}
+wd:     pull
+        set y 15
+bit:    out raw 7            ; b = next bit (pin 7 scratch)
+        jmp b one
+        dly x                ; end of previous bit's low time
+        set pin 0 1
+        dly {H0}
+        set pin 0 0
+        set x {P - H0}
+        jmp nx
+one:    dly x
+        set pin 0 1
+        dly {H1}
+        set pin 0 0
+        set x {P - H1}
+nx:     jmp y-- bit
+        jmp wd

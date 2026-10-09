@@ -1,0 +1,96 @@
+; I2C controller. SCL=0 SDA=1, open drain (pout=0, oe=1 pulls low). Pin 7 is scratch.
+; cfg osr_lsb=0 isr_lsb=0. 400 kHz: SCL low 3Q = 1.5 us, high 2Q = 1.0 us.
+; Host word: {S,P,R,A,4'b0,data}. S: START before, P: STOP after, R: read (else write),
+; A: after a read, 1 = NACK. Pushes: write -> bit0 = target ACK bit (0 = ACK); read -> data.
+.equ Q {ns(500)}
+        set pins 0
+        set oes 0
+top:    pull
+        mov y osr
+        set ctl sync isr0
+        out raw 7            ; b = S
+        jmp b start
+        jmp body
+start:  set oe 1 0           ; release SDA
+        dly {Q}
+        set oe 0 0           ; release SCL
+        wait 1 0             ; clock stretching
+        set ctl sync
+        dly {Q}
+        set oe 1 1           ; SDA low while SCL high: START
+        dly {Q}
+        set oe 0 1           ; SCL low
+body:   mov osr y
+        out raw 7
+        out raw 7
+        out raw 7            ; b = R
+        jmp b rd
+        mov osr ~y           ; open drain: oe = ~data
+        set x 7
+skw:    out raw 7
+        jmp x-- skw
+        set x 7
+wb:     dly {Q}
+        out oe 1             ; SDA while SCL low
+        dly {2 * Q}
+        set oe 0 0           ; SCL high
+        wait 1 0
+        set ctl sync
+        dly {2 * Q}
+        set oe 0 1           ; SCL low
+        jmp x-- wb
+        dly {Q // 2}
+        set oe 1 0           ; release SDA for ACK
+        dly {5 * Q // 2}
+        set oe 0 0
+        wait 1 0
+        set ctl sync isr0
+        dly {Q}
+        in raw 1             ; ACK bit
+        dly {Q}
+        set oe 0 1
+        push
+        jmp fin
+rd:     set oe 1 0
+        set ctl isr0
+        set x 7
+rb:     dly {3 * Q}
+        set oe 0 0
+        wait 1 0
+        set ctl sync
+        dly {Q}
+        in raw 1
+        dly {Q}
+        set oe 0 1
+        jmp x-- rb
+        mov osr y
+        out raw 7
+        out raw 7
+        out raw 7
+        out raw 7            ; b = A
+        jmp b nack
+        set oe 1 1           ; ACK
+nack:   dly {3 * Q}
+        set oe 0 0
+        wait 1 0
+        set ctl sync
+        dly {2 * Q}
+        set oe 0 1
+        dly {Q // 2}
+        set oe 1 0
+        push
+fin:    mov osr y
+        out raw 7
+        out raw 7            ; b = P
+        jmp b stop
+        jmp top
+stop:   dly {Q // 2}
+        set oe 1 1           ; SDA low
+        dly {5 * Q // 2}
+        set oe 0 0           ; SCL high
+        wait 1 0
+        set ctl sync
+        dly {2 * Q}
+        set oe 1 0           ; SDA rises while SCL high: STOP
+        dly {2 * Q}
+        jmp top

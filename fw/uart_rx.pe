@@ -1,0 +1,16 @@
+; UART 8N1 receiver on pin 1. Bit period = 16 clocks. Samples mid-bit.
+; L = edge-detection latency (2 synchroniser flip-flops + WAIT). Measured tolerance: +-5% bit rate.
+; Result: RX word bits [15:8] = byte (cfg isr_lsb=1).
+.equ T 16
+.equ L 3
+top:    wait 1 1             ; line idle high
+        wait 0 1             ; start-bit falling edge
+        set ctl sync isr0
+        set x 7
+        dly {T // 2 - L}      ; half bit, less the detection latency
+bit:    dly {T}
+        in raw 1
+        jmp x-- bit
+        push
+        dly {T}               ; middle of stop bit
+        jmp top

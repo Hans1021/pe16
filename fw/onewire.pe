@@ -1,0 +1,51 @@
+; 1-Wire controller, DQ = pin 0 open drain. Standard-speed timing from the clock.
+; cfg osr_lsb=1 isr_lsb=1. Host word: {data[9:2], op[1:0]}: op 0 reset, 1 write byte, 2 read byte.
+; Reset pushes bit15 = presence line level (0 = device present). Read pushes byte in [15:8].
+        set pins 0
+        set oes 0
+top:    pull
+        set ctl sync isr0
+        out raw 7            ; b = op0
+        jmp b wr
+        out raw 7            ; b = op1
+        jmp b rd
+        set oe 0 1           ; reset: low 480 us
+        set ctl sync         ; time the low from the falling edge
+        set x 5
+r1:     dly {us(80)}
+        jmp x-- r1
+        set oe 0 0
+        dly {us(70)}
+        in raw 0             ; presence
+        set x 4
+r2:     dly {us(82)}          ; 410 us recovery
+        jmp x-- r2
+        push
+        jmp top
+wr:     out raw 7            ; skip op1
+        set x 7
+wb:     out raw 7            ; b = data bit
+        set oe 0 1
+        set ctl sync
+        jmp b w1
+        dly {us(60)}          ; write 0: low 60 us
+        set oe 0 0
+        dly {us(10)}
+        jmp x-- wb
+        jmp top
+w1:     dly {us(6)}           ; write 1: low 6 us
+        set oe 0 0
+        dly {us(64)}
+        jmp x-- wb
+        jmp top
+rd:     set x 7
+rbit:   set oe 0 1
+        set ctl sync
+        dly {us(6)}
+        set oe 0 0
+        dly {us(7)}           ; sample at 13 us
+        in raw 0
+        dly {us(57)}
+        jmp x-- rbit
+        push
+        jmp top
