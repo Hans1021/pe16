@@ -13,15 +13,95 @@
 
   "//": "PL_TARGET_DENSITY_PCT - You can increase this if Global Placement fails with error GPL-0302.",
   "//": "Users have reported that values up to 80 worked well for them.",
-  "PL_TARGET_DENSITY_PCT": 60,
+  "PL_TARGET_DENSITY_PCT": 55,
 
   "//": "CLOCK_PERIOD - Increase this in case you are getting setup time violations.",
   "//": "The value is in nanoseconds, so 20ns == 50MHz.",
   "CLOCK_PERIOD": 20,
 
-  "VERILOG_DEFINES": ["PE_FLOP_IMEM"],
-
   "DRT_ANTENNA_REPAIR_ITERS": 3,
+
+  "ROUTING_OBSTRUCTIONS": [
+    ["Metal3", 29.44, 29.44, 627.52, 30.24],
+    ["Metal3", 29.44, 149.02, 627.52, 149.82],
+    ["Metal3", 29.44, 30.24, 30.24, 149.02],
+    ["Metal3", 626.72, 30.24, 627.52, 149.02],
+
+    ["Metal3", 661.76, 29.44, 1259.84, 30.24],
+    ["Metal3", 661.76, 149.02, 1259.84, 149.82],
+    ["Metal3", 661.76, 30.24, 662.56, 149.02],
+    ["Metal3", 1259.04, 30.24, 1259.84, 149.02],
+
+    ["Metal3", 29.44, 189.20, 627.52, 190.00],
+    ["Metal3", 29.44, 308.78, 627.52, 309.58],
+    ["Metal3", 29.44, 190.00, 30.24, 308.78],
+    ["Metal3", 626.72, 190.00, 627.52, 308.78],
+
+    ["Metal3", 661.76, 189.20, 1259.84, 190.00],
+    ["Metal3", 661.76, 308.78, 1259.84, 309.58],
+    ["Metal3", 661.76, 190.00, 662.56, 308.78],
+    ["Metal3", 1259.04, 190.00, 1259.84, 308.78],
+
+    ["Metal2", 28.90, 29.44, 30.24, 149.82],
+
+    ["Metal2", 988.40, 20.24, 989.95, 27.74],
+    ["Metal2", 988.40, 180.00, 989.95, 187.50]
+  ],
+
+  "MACROS": {
+    "RM_IHPSG13_1P_256x48_c2_bm_bist": {
+      "gds": [
+        "dir::RM_IHPSG13_1P_256x48_c2_bm_bist_fixed.gds"
+      ],
+      "lef": [
+        "pdk_dir::libs.ref/sg13g2_sram/lef/RM_IHPSG13_1P_256x48_c2_bm_bist.lef"
+      ],
+      "nl": [
+        "dir::sram_256x48_bb.v"
+      ],
+      "lib": {
+        "*fast*": [
+          "pdk_dir::libs.ref/sg13g2_sram/lib/RM_IHPSG13_1P_256x48_c2_bm_bist_fast_1p32V_m55C.lib"
+        ],
+        "*typ*": [
+          "pdk_dir::libs.ref/sg13g2_sram/lib/RM_IHPSG13_1P_256x48_c2_bm_bist_typ_1p20V_25C.lib"
+        ],
+        "*slow*": [
+          "pdk_dir::libs.ref/sg13g2_sram/lib/RM_IHPSG13_1P_256x48_c2_bm_bist_slow_1p08V_125C.lib"
+        ]
+      },
+
+      "instances": {
+        "eng[0].u_imem.u_sram": {
+          "location": [30.24, 30.24],
+          "orientation": "N"
+        },
+        "eng[1].u_imem.u_sram": {
+          "location": [662.56, 30.24],
+          "orientation": "N"
+        },
+        "eng[2].u_imem.u_sram": {
+          "location": [30.24, 190.0],
+          "orientation": "N"
+        },
+        "eng[3].u_imem.u_sram": {
+          "location": [662.56, 190.0],
+          "orientation": "N"
+        }
+      }
+    }
+  },
+
+  "PDN_MACRO_CONNECTIONS": [
+    "eng.*u_imem.*u_sram VPWR VGND VDD! VSS!",
+    "eng.*u_imem.*u_sram VPWR VGND VDDARRAY! VSS!"
+  ],
+
+  "PDN_CFG": "dir::pdn_cfg.tcl",
+
+  "MAGIC_DRC_MAGLEFS": [
+    "dir::magic_drc/RM_IHPSG13_1P_256x48_c2_bm_bist.mag"
+  ],
 
   "//": "Hold slack margin - Increase them in case you are getting hold violations.",
   "PL_RESIZER_HOLD_SLACK_MARGIN": 0.1,
@@ -36,7 +116,7 @@
   "CLOCK_PORT": "clk",
 
   "//": "Configuration docs: https://librelane.readthedocs.io/en/latest/reference/configuration.html",
-
+  
   "//": "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
   "//": "!!! DO NOT CHANGE ANYTHING BELOW THIS POINT !!!",
   "//": "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
