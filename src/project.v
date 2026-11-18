@@ -2,7 +2,7 @@
  * PE16 protocol emulator: Tiny Tapeout top.
  * ui_in[0]=SCK ui_in[1]=CS_N ui_in[2]=MOSI (SPI mode 0 host port)
  * uo_out[0]=MISO uo_out[1]=halt(any) uo_out[2]=overrun(any) uo_out[3]=run(any)
- * uio[7:0] = protocol pins shared by all engines (out/oe ORed across engines)
+ * uio[7:0] = shared protocol pins with configurable per-pin engine ownership
  * SPDX-License-Identifier: Apache-2.0
  */
 `default_nettype none
@@ -37,7 +37,8 @@ module tt_um_pe16 #(parameter NENG = `PE_NENG_DEFAULT) (
   wire s_din  = mosi_s[1];
 
   // ---------------- SPI command engine ----------------
-  localparam C_IMEM=6'd1, C_CFG=6'd2, C_TX=6'd3, C_RX=6'd4, C_STAT=6'd5, C_CNT=6'd6, C_CTRL=6'd7;
+  localparam C_IMEM=6'd1, C_CFG=6'd2, C_TX=6'd3, C_RX=6'd4,
+             C_STAT=6'd5, C_CNT=6'd6, C_CTRL=6'd7, C_OWNER=6'd8, C_CFGREAD=6'd9;
   reg [7:0]  cmd;  reg cmd_ok;
   reg [2:0]  bcnt;           // bit within byte
   reg [3:0]  wcnt;           // bit within word
@@ -47,11 +48,35 @@ module tt_um_pe16 #(parameter NENG = `PE_NENG_DEFAULT) (
   reg [15:0] rd_sh; reg miso;
   wire [1:0] eid  = cmd[7:6];
   wire [5:0] code = cmd[5:0];
-  wire       needs_addr = (code == C_IMEM) || (code == C_CFG);
+  wire needs_addr = (code == C_IMEM) ||
+                  (code == C_CFG) ||
+                  (code == C_CFGREAD);
 
   // per-engine strobes
   reg        st_imem, st_cfg, st_tx, st_pop, st_ctrl;
   reg [15:0] st_word;
+
+  // ---------------- global pin ownership ----------------
+  // Each 2-bit field selects the engine controlling one protocol pin.
+  // pin_owner[2*p +: 2] = engine ID for pin p.
+  // Reset assigns all pins to Engine 0.
+  // ---------------- global pin ownership ----------------
+  // Two owner bits per pin; validity mask controls assignment.
+  // Global reset leaves all protocol pins unassigned.
+  reg [15:0] pin_owner;
+  reg [7:0]  pin_valid;
+
+  always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+      pin_owner <= 16'd0;
+      pin_valid <= 8'd0;
+    end else if (st_cfg && eid == 2'd0) begin
+      if (haddr == 8'd2)
+        pin_owner <= st_word;
+      else if (haddr == 8'd3)
+        pin_valid <= st_word[7:0];
+    end
+  end
 
   wire [15:0] rd_word;
   always @(posedge clk or negedge rst_n) begin
@@ -96,6 +121,8 @@ module tt_um_pe16 #(parameter NENG = `PE_NENG_DEFAULT) (
   // ---------------- engines ----------------
   wire [7:0]  e_pout [0:NENG-1];
   wire [7:0]  e_poe  [0:NENG-1];
+  wire [15:0] e_poly [0:NENG-1];
+  wire [11:0] e_misc [0:NENG-1];
   wire [15:0] e_rd   [0:NENG-1];
   wire [7:0]  e_pc   [0:NENG-1];
   wire [2:0]  e_txc  [0:NENG-1];
@@ -105,7 +132,10 @@ module tt_um_pe16 #(parameter NENG = `PE_NENG_DEFAULT) (
   genvar g;
   generate for (g = 0; g < NENG; g = g + 1) begin : eng
     wire sel = (eid == g);
-    reg [15:0] poly; reg [11:0] misc; reg run; reg srst;
+    reg [15:0] poly; reg [11:0] misc; 
+    assign e_poly[g] = poly;
+    assign e_misc[g] = misc;
+    reg run; reg srst;
     always @(posedge clk or negedge rst_n)
       if (!rst_n) begin poly<=0; misc<=12'h03F; run<=0; srst<=0; end
       else begin
@@ -134,17 +164,40 @@ module tt_um_pe16 #(parameter NENG = `PE_NENG_DEFAULT) (
   end endgenerate
 
   // read mux
-  wire [1:0] es = (eid < NENG) ? eid : 2'd0;
-  assign rd_word = (code == C_RX)   ? e_rd[es] :
-                   (code == C_STAT) ? {e_pc[es], e_run[es], e_halt[es], e_ov[es], 5'd0} :
-                   (code == C_CNT)  ? {10'd0, e_rxc[es], e_txc[es]} : 16'd0;
+  wire valid_eid = ({30'd0, eid} < NENG);
+  wire [1:0] es = valid_eid ? eid : 2'd0;
 
-  // pin combine
-  integer k;
+  wire [15:0] cfg_read_word =
+      (haddr == 8'd2 && eid == 2'd0) ? pin_owner :
+      (haddr == 8'd3 && eid == 2'd0) ? {8'd0, pin_valid} :
+      !valid_eid                     ? 16'd0 :
+      (haddr == 8'd0)                ? e_poly[es] :
+      (haddr == 8'd1)                ? {4'd0, e_misc[es]} :
+                                      16'd0;
+
+  assign rd_word = (code == C_OWNER) ? pin_owner :
+                  !valid_eid       ? 16'd0 :
+                  (code == C_RX)    ? e_rd[es] :
+                  (code == C_STAT)  ? {e_pc[es], e_run[es], e_halt[es], e_ov[es], 5'd0} :
+                  (code == C_CNT)   ? {10'd0, e_rxc[es], e_txc[es]} :
+                  (code == C_CFGREAD) ? cfg_read_word : 16'd0;
+
+  // ---------------- protocol pin ownership mux ----------------
+  integer k, p;
   reg [7:0] po, pe;
+
   always @* begin
-    po = 8'd0; pe = 8'd0;
-    for (k = 0; k < NENG; k = k + 1) begin po = po | e_pout[k]; pe = pe | e_poe[k]; end
+      po = 8'd0;
+      pe = 8'd0;
+
+      for (p = 0; p < 8; p = p + 1) begin
+          for (k = 0; k < NENG; k = k + 1) begin
+              if (pin_valid[p] && pin_owner[2*p +: 2] == k[1:0]) begin
+                  po[p] = e_pout[k][p];
+                  pe[p] = e_poe[k][p];
+              end
+          end
+      end
   end
   assign uio_out = po;
   assign uio_oe  = pe;

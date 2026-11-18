@@ -14,7 +14,18 @@ import pe16
 @cocotb.test()
 async def four_engines(dut):
     h = await setup(dut)
-    neng = int(dut.user_project.NENG.value)
+    try:
+        neng = int(dut.user_project.NENG.value)
+    except AttributeError:
+        # Synthesis may remove parameter objects from the gate-level netlist.
+        # The physical CMOS5L implementation has four engines.
+        neng = 4
+    # Configure global pin ownership before starting any engines.
+    # Pin 0 -> Engine 0 (UART TX)
+    # Pin 3 -> Engine 3 (UART TX)
+    # Pin 6 -> Engine 1 (CAN TX)
+    # All other pins -> Engine 0
+    await h.cmd(0, 2, h.b8(2) + h.b16(0x10C0))
     dut._log.info(f"NENG = {neng}")
     progs = [("uart_tx", pe16.Cfg(osr_lsb=1)),                                   # pin 0
              ("can_tx", pe16.Cfg(poly=0x4599, crcw=14, osr_lsb=0, stuff_n=5)),   # pin 6
@@ -29,6 +40,14 @@ async def four_engines(dut):
         name, cfg = progs[e]
         words = pe16.assemble(tx3) if name == "ws2812_p3" else fw(name)
         await h.load(e, words, cfg or pe16.Cfg(osr_lsb=1))
+
+    # Global pin ownership:
+    # pin 0 -> engine 0 (UART TX)
+    # pin 1 -> engine 2 (UART RX, input-only)
+    # pin 3 -> engine 3 (UART TX)
+    # pin 6 -> engine 1 (CAN TX)
+    await h.cmd(0, 2, h.b8(2) + h.b16(0x10C0))
+
     await ClockCycles(dut.clk, 40)
 
     # stimulus for all engines at once

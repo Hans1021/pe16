@@ -68,15 +68,73 @@ Do not use `stuff_n = 1` in identical-bit mode: the unit stuffs forever
 
 Command byte = `{engine[1:0], code[5:0]}`, MSB first. SCK must be at most clk/8.
 
+
 | Code | Name | Payload |
 |---|---|---|
 | 1 | IMEM write | address byte, then 16-bit words (auto-increment); ignored while running |
-| 2 | CFG write | reg byte, 16-bit value. reg 0 = CRC polynomial; reg 1 = `{diff[11], nrzi[10], stuff_ones[9], stuff_n[8:6], isr_lsb[5], osr_lsb[4], crcw[3:0]}` (crcw = width - 1) |
+| 2 | CFG write | reg byte, 16-bit value. Engine-local: reg 0 = CRC polynomial; reg 1 = `{diff[11], nrzi[10], stuff_ones[9], stuff_n[8:6], isr_lsb[5], osr_lsb[4], crcw[3:0]}` (crcw = width - 1). Global: engine 0, reg 2 = pin ownership |
 | 3 | TX push | 16-bit words |
 | 4 | RX pop | reads 16-bit words (reads 0 when empty) |
 | 5 | STATUS | reads `{pc[7:0], run, halt, ov, 5'b0}` |
 | 6 | COUNTS | reads `{10'b0, rx_count[2:0], tx_count[2:0]}` |
-| 7 | CTRL | one byte: bit0 run, bit1 engine reset |
+| 7 | CTRL | one byte: bit 0 = run, bit 1 = engine reset |
+| 8 | OWNER read | reads the global 16-bit pin ownership register |
+
+
+### Protocol pin ownership
+
+The eight bidirectional protocol pins (`uio[7:0]`) are shared by all engines.
+A global 16-bit register, `PIN_OWNER`, assigns exclusive output control of
+each pin to one engine.
+
+For pin `p`, `PIN_OWNER[2*p +: 2]` selects its owner:
+
+| Value | Owner |
+|---|---|
+| `00` | Engine 0 |
+| `01` | Engine 1 |
+| `10` | Engine 2 |
+| `11` | Engine 3 |
+
+Only the selected engine's `pout[p]` and `poe[p]` drive the physical
+output and output-enable signals. Other engines cannot affect that pin's
+output, even if their output-enable bits are set.
+
+All engines can independently sample all eight protocol inputs.
+
+#### Configuration
+
+Write ownership using the SPI CFG command with engine ID 0 and
+register address 2:
+
+`02 02 HH LL`
+
+Here, `HH LL` is the new 16-bit ownership value, transmitted MSB first.
+
+Read ownership using the OWNER command (code 8):
+
+`08 00 00`
+
+The two dummy bytes clock out the 16-bit register value.
+
+For example, `PIN_OWNER = 0x10C0` assigns:
+
+- Pin 0 to Engine 0 (UART TX)
+- Pin 3 to Engine 3 (UART TX)
+- Pin 6 to Engine 1 (CAN TX)
+- All other pins to Engine 0
+
+#### Reset and ownership rules
+
+- Global reset clears `PIN_OWNER` to zero, assigning all pins to Engine 0.
+- Engine-specific resets do not modify global ownership.
+- If the owner disables its output, the physical pin becomes high-impedance.
+- In a reduced-engine configuration, assigning a pin to a nonexistent engine
+  leaves that pin's output disabled.
+- Ownership should be configured before starting the affected engines to
+  avoid unintended transitions during ownership changes.
+- All pin ownership changes take effect together when the CFG write completes.
+
 
 ## Assembler (`isa/pe16.py: assemble`)
 

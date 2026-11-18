@@ -1,4 +1,4 @@
-# PE16: a programmable protocol engine for Tiny Tapeout (IHP CMOS5L, 6x4)
+# PE16: a programmable protocol engine for Tiny Tapeout (IHP CMOS5L, 8x4)
 
 Entry for the Jane Street protocol emulator ASIC competition (deadline 18 January 2027).
 Protocols run as firmware on small engines whose ISA is built for pin timing: a deadline
