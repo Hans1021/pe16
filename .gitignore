@@ -3,6 +3,7 @@
 *.vcd
 *.fst
 *.fst.hier
+*:Zone.Identifier
 runs
 tt_submission
 src/user_config.json
@@ -11,3 +12,23 @@ test/sim_build
 test/__pycache__/
 test/results.xml
 test/gate_level_netlist.v
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Local environment
+.envrc
+
+# Simulation outputs
+**/sim_build/
+**/results.xml
+
+# ASIC generated outputs
+src/magic_drc/
+src/*.mag
+src/*.gds
+
+# Downloaded dependencies
+tt/

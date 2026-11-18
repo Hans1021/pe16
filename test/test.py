@@ -17,7 +17,8 @@ CAN_T = C['bit'](500000)
 
 
 def fw(name):
-    return pe16.assemble(open(os.path.join(FW, name + ".pe")).read())
+    with open(os.path.join(FW, name + ".pe")) as f:
+        return pe16.assemble(f.read())
 
 
 # ---------------- SPI host driver ----------------
@@ -97,7 +98,14 @@ async def setup(dut):
     await ClockCycles(dut.clk, 5)
     dut.rst_n.value = 1
     await ClockCycles(dut.clk, 5)
-    return Host(dut)
+
+    h = Host(dut)
+
+    # Enable all eight pins for backward-compatible protocol tests.
+    # Individual tests may override this mask.
+    await h.cmd(0, 2, h.b8(3) + h.b16(0x00FF))
+
+    return h
 
 
 def pin(dut, i):

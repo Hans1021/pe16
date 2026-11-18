@@ -1,6 +1,7 @@
-// Instruction store: 256x16 synchronous-read RAM.
-// Synthesis/GL: IHP 256x16 SRAM macro. RTL simulation without the PDK: behavioural model
-// with the same read timing (data valid the cycle after the address is presented).
+// Instruction store: logical 256x16 synchronous-read RAM.
+// Synthesis/GL: 256x16 IHP SRAM macro, using bits [15:0].
+// RTL simulation without the PDK: behavioural model with matching read timing
+// (data valid the cycle after the address is presented).
 `default_nettype none
 module pe_imem (
   input  wire        clk,
@@ -9,7 +10,23 @@ module pe_imem (
   input  wire [15:0] wdata,
   output wire [15:0] rdata
 );
-`ifdef PE_FLOP_IMEM
+
+`ifdef PE_FPGA_BRAM_IMEM
+  // FPGA-only 256x16 synchronous instruction BRAM.
+  // Write-through behavior matches the ASIC SRAM interface.
+  (* ram_style = "block" *) reg [15:0] m [0:255];
+  reg [15:0] q;
+
+  always @(posedge clk) begin
+    if (we)
+      m[addr] <= wdata;
+
+    q <= we ? wdata : m[addr];
+  end
+
+  assign rdata = q;
+
+`elsif PE_FLOP_IMEM
   // Standard-cell fallback when the SRAM macro cannot be powered in the TT flow.
   // 128 words; address bit 7 is ignored (programs must fit in 128 words).
   reg [15:0] m [0:127];
@@ -28,10 +45,29 @@ module pe_imem (
   end
   assign rdata = q;
 `else
+  wire [15:0] sram_dout;
+
   RM_IHPSG13_1P_256x16_c2_bm_bist u_sram (
-    .A_CLK(clk), .A_MEN(1'b1), .A_WEN(we), .A_REN(1'b1), .A_ADDR(addr),
-    .A_DIN(wdata), .A_DLY(1'b1), .A_DOUT(rdata), .A_BM(16'hFFFF),
-    .A_BIST_CLK(1'b0), .A_BIST_EN(1'b0), .A_BIST_MEN(1'b0), .A_BIST_WEN(1'b0),
-    .A_BIST_REN(1'b0), .A_BIST_ADDR(8'd0), .A_BIST_DIN(16'd0), .A_BIST_BM(16'd0));
+    .A_CLK      (clk),
+    .A_MEN      (1'b1),
+    .A_WEN      (we),
+    .A_REN      (1'b1),
+    .A_ADDR     (addr),
+    .A_DIN      (wdata),
+    .A_DLY      (1'b1),
+    .A_DOUT     (sram_dout),
+    .A_BM       (16'hFFFF),
+
+    .A_BIST_CLK (1'b0),
+    .A_BIST_EN  (1'b0),
+    .A_BIST_MEN (1'b0),
+    .A_BIST_WEN (1'b0),
+    .A_BIST_REN (1'b0),
+    .A_BIST_ADDR(8'd0),
+    .A_BIST_DIN (16'd0),
+    .A_BIST_BM  (16'd0)
+  );
+
+  assign rdata = sram_dout[15:0];
 `endif
 endmodule

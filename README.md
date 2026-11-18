@@ -1,45 +1,155 @@
-# PE16: a programmable protocol engine for Tiny Tapeout (IHP CMOS5L, 6x4)
 
-Entry for the Jane Street protocol emulator ASIC competition (deadline 18 January 2027).
-Protocols run as firmware on small engines whose ISA is built for pin timing: a deadline
-`DLY` instruction, a host-configurable CRC unit, and a CAN/USB bit-stuffing unit.
-The ISA has three executable models kept in agreement by test, and the timing and stuffing
-claims are proved in Lean 4.
+# PE16: Programmable Protocol Engine
+
+**Jane Street Protocol Emulator ASIC Competition — IHP SG13CMOS5L, Tiny Tapeout 8×4**
+
+PE16 is a programmable protocol processor with four independent 16-bit engines. Instead of implementing dedicated hardware for each communication protocol, it executes protocol-specific firmware using an instruction set optimized for precise bit-level timing.
+
+The design includes configurable CRC computation, bit stuffing/destuffing, NRZI and differential signaling, and independently programmable instruction memories. It has completed the Tiny Tapeout ASIC hardening and precheck workflows and has been implemented and tested on a Digilent Basys3 FPGA.
+
+**Submission deadline:** January 18, 2027.
+
+## Architecture
+
+| Feature | Specification |
+|---|---|
+| Process | IHP SG13CMOS5L (130 nm) |
+| ASIC allocation | Tiny Tapeout 8×4 tiles |
+| Engines | 4 independent 16-bit processors |
+| Instruction memory | 256 × 16 bits per engine, IHP SRAM |
+| System clock | 48 MHz |
+| Protocol I/O | 8 shared bidirectional pins |
+| Host interface | SPI mode 0 |
+| Per-engine FIFOs | 4 × 16-bit TX and RX |
+| Pin routing | Programmable ownership and validity mask |
+| Alternative implementation | 2-engine flip-flop instruction memory |
+
+### Protocol engines
+
+Each engine executes a compact 16-bit ISA supporting conditional branches, GPIO control, shift-register operations, and deadline-based delays (`DLY`). The instruction set also incorporates CRC, bit stuffing/destuffing, NRZI, and complementary differential output.
+
+A shared SPI host interface supports firmware loading, configuration readback, FIFO transfers, status queries, and independent engine control.
+
+All eight protocol pins have programmable ownership. Only the selected engine can drive a pin, while all engines can sample its input. A validity mask keeps unassigned pins high-impedance.
+
+The ASIC uses four IHP 256×16 SRAM macros. Simulation supports behavioral memory and a reduced two-engine flip-flop configuration; the FPGA uses inferred block RAM.
+
+See [docs/isa.md](docs/isa.md) for the complete ISA and host command specification.
+
+## Protocol support
+
+PE16 provides 23 firmware programs covering 16 communication protocols.
+
+| Category | Protocols |
+|---|---|
+| Serial communication | UART, SPI controller/target, I²C controller/target |
+| Debug interfaces | JTAG, SWD |
+| Peripheral interfaces | 1-Wire, PS/2, MDIO |
+| Industrial communication | CAN, LIN, DMX512, Modbus RTU, MIL-STD-1553 |
+| Other signaling | USB low-speed packets, WS2812, 10BASE-T-style Manchester framing |
+
+Capabilities and limitations vary by firmware. Some implementations demonstrate selected transactions or physical signaling rather than complete standards-compliant protocol stacks.
+
+See [docs/protocols.md](docs/protocols.md) for detailed functionality, timing, and limitations.
+
+## Verification
+
+PE16 uses multiple complementary verification methods:
+
+| Method | Coverage |
+|---|---|
+| Cocotb | 36 top-level tests with independent protocol reference models |
+| Differential testing | Randomized RTL comparison against a cycle-accurate Python model |
+| Lean 4 | ISA model and eight timing/bit-stuffing theorems |
+| Mutation testing | Fault injection into RTL, firmware, and reference models |
+| ASIC implementation | Completed Tiny Tapeout GDS hardening and precheck |
+| FPGA testing | Real hardware validation using Basys3 and Analog Discovery 3 |
+
+The completed ASIC workflow includes physical implementation with four SRAM macros. Successful hardening and precheck do not constitute fabricated-silicon validation.
+
+### FPGA hardware validation
+
+The four-engine design was implemented on a Digilent Basys3 at 48 MHz and tested using an Analog Discovery 3. The host SPI operated at 100 kHz during hardware experiments.
+
+| Test | Verified behavior | Evidence |
+|---|---|---|
+| Four-engine execution | Concurrent 6, 12, 24, 48 kHz outputs | [Capture](fpga/results/screenshots/four_engines.png) |
+| UART TX/RX | 38,400 baud, multi-byte reception and FIFO ordering | [TX capture](fpga/results/screenshots/uart_tx.png) |
+| SPI TX/RX | Mode 0, approximately 100 kHz | [TX capture](fpga/results/screenshots/spi_tx.png) |
+| I²C | Master transmission and bidirectional ACK loopback | [TX capture](fpga/results/screenshots/i2c_tx.png) |
+| 1-Wire | Reset/write timing, presence detection and negative control | [Timing capture](fpga/results/screenshots/onewire_tx.png) |
+| Manchester | Encoded transmission and RX loopback | [TX capture](fpga/results/screenshots/manchester_tx.png) |
+| NRZI | Hardware encoding and decoding loopback | SPI readback |
+| PWM | 12 kHz at 25% and 75% duty cycles | [25%](fpga/results/screenshots/pwm_25.png) / [75%](fpga/results/screenshots/pwm_75.png) |
+
+Independent engine reset/reprogramming, pin ownership, and configuration readback were also verified.
+
+The [FPGA source files](fpga/basys3/), [test scripts](fpga/tests/), and [implementation reports](fpga/results/) are included in the repository.
+
+See [VERIFICATION.md](docs/verification.md) for measured results and verification details.
+
+## Repository structure
 
 | Path | Contents |
 |---|---|
-| `src/` | RTL: `pe_core.v` (engine), `pe_imem.v` (IHP SRAM wrapper), `project.v` (TT top, SPI host port) |
-| `isa/pe16.py` | assembler and cycle-accurate golden model |
-| `fw/` | firmware for 23 protocol programs, listed in `docs/protocols.md` |
-| `test/test.py`, `test/test_protocols.py`, `test/test_cps.py`, `test/test_multi.py` | 25 top-level cocotb tests through the SPI port, with independent protocol reference models |
-| `test/fw_mutate.sh` | firmware fault injection against the protocol tests |
-| `test/core/` | RTL vs golden model differential test, coverage bins, mutation script |
-| `lean/` | Lean 4.15.0 model, proofs, and the Lean vs Python trace cross-check |
-| `synth/` | Yosys synthesis logs against the sg13cmos5l typical library |
-| `docs/REPORT.md` | technical report: architecture, RTL, every protocol, verification, timing, open items |
-| `docs/report/` | the same report in LaTeX with TikZ figures (`pe16_report.tex`, `pe16_report.pdf`) |
-| `docs/isa.md` | ISA and host protocol |
+| [src/](src/) | Verilog RTL and Tiny Tapeout top module |
+| [isa/](isa/) | Assembler and Python golden model |
+| [fw/](fw/) | Protocol firmware |
+| [test/](test/) | Cocotb protocol and multi-engine tests |
+| [test/core/](test/core/) | Differential ISA verification |
+| [lean/](lean/) | Lean 4 model, proofs, and cross-checking |
+| [fpga/basys3/](fpga/basys3/) | Basys3 wrapper, constraints, and build scripts |
+| [fpga/tests/](fpga/tests/) | FPGA protocol test scripts |
+| [fpga/results/](fpga/results/) | WaveForms captures and Vivado reports |
+| [synth/](synth/) | ASIC synthesis experiments |
+| [docs/](docs/) | Technical report, ISA, and protocol documentation |
 
-## Reproduce
+## Reproducing the results
 
+### RTL simulation
+
+```bash
+make -C test
+make -C test IMEM=flop
+make -C test SRAM_MODEL=yes PDK_ROOT=<ihp-pdk>
 ```
-make -C test                                   # 25 tests, 4 engines (behavioural SRAM)
-make -C test IMEM=flop                         # same, 2-engine flip-flop fallback
-make -C test SRAM_MODEL=yes PDK_ROOT=<ihp-pdk> # same, with the IHP 256x16 SRAM model
-test/fw_mutate.sh [test-name-prefix]           # firmware mutants vs protocol tests
-make -C test/core                              # 200 random programs, RTL == golden model
-test/core/mutate.sh                            # RTL mutants vs the differential test
-cd lean && lake build                          # proofs + cross-check executable
+
+### Differential and mutation testing
+
+```bash
+make -C test/core
+test/core/mutate.sh
+test/fw_mutate.sh
+```
+
+### Lean verification
+
+```bash
+cd lean
+lake build
 python3 gen_traces.py 500 600 | .lake/build/bin/crosscheck
 ```
 
-## Status (see VERIFICATION.md for the evidence)
+### ASIC implementation
 
-Done: 4-engine RTL (2 with the flip-flop fallback); UART, SPI (both roles), I2C (both roles), JTAG, SWD read, PS/2 receive, 1-Wire,
-WS2812, DMX512, LIN, MDIO, CAN transmit and receive, USB low-speed packet transmit and receive, and
-10BASE-T-style Manchester framing at reduced rate, Modbus RTU transmit and receive, and
-MIL-STD-1553 word transmit and receive. Limits per protocol are in `docs/protocols.md`.
-Four engines run concurrently in simulation (two with the flip-flop fallback). Clock: 48 MHz.
-Open: place-and-route and static timing in the TT flow, the LibreLane power step for the SRAM
-macros (or the 2-engine flip-flop build), CAN resynchronisation, USB clock recovery, full-rate
-10BASE-T.
+The GitHub Actions workflows perform RTL verification, synthesis, GDS hardening, and Tiny Tapeout precheck. Build outputs and detailed logs are available through the workflow artifacts.
+
+### FPGA implementation
+
+The [Basys3 directory](fpga/basys3/) contains the FPGA-specific build inputs. The [test scripts](fpga/tests/) generate host SPI transactions for programming and exercising PE16 through Digilent WaveForms.
+
+Post-synthesis and post-implementation results are available in [fpga/results/](fpga/results/).
+
+## Documentation
+
+- [Technical report](docs/report.md)
+- [LaTeX/PDF report](docs/report/)
+- [Verification record](docs/verification.md)
+- [Instruction set and host interface](docs/isa.md)
+- [Protocol firmware reference](docs/protocols.md)
+
+## Status and limitations
+
+The four-engine RTL, automated verification infrastructure, FPGA implementation, and Tiny Tapeout ASIC hardening flow are complete. Fabricated silicon has not yet been tested.
+
+Remaining limitations include CAN receiver resynchronization, USB clock recovery and enumeration, and full-rate 10BASE-T operation. Protocols requiring specialized physical layers, such as CAN and MIL-STD-1553, also require external transceivers for connection to real buses.
