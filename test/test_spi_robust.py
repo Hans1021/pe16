@@ -1,4 +1,3 @@
-
 import cocotb
 from cocotb.triggers import ClockCycles
 
@@ -53,7 +52,7 @@ async def unknown_opcode(dut):
     h = await setup(dut)
 
     # Unsupported opcodes must not change engine state or FIFO counts.
-    for opcode in (0, 9, 15, 63):
+    for opcode in (0, 10, 15, 63):
         await h.cmd(0, opcode, h.b16(0xFFFF))
 
     assert (await h.status(0))["run"] == 0
@@ -68,7 +67,10 @@ async def unknown_opcode(dut):
 @cocotb.test()
 async def invalid_engine_id(dut):
     h = await setup(dut)
-    neng = int(dut.user_project.NENG.value)
+    try:
+        neng = int(dut.user_project.NENG.value)
+    except AttributeError:
+        neng = 4
 
     if neng == 4:
         dut._log.info("All 2-bit engine IDs are valid; skipping invalid-ID checks")

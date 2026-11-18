@@ -117,7 +117,10 @@ async def pin_ownership(dut):
 @cocotb.test()
 async def all_pin_ownership(dut):
     h = await setup(dut)
-    neng = int(dut.user_project.NENG.value)
+    try:
+        neng = int(dut.user_project.NENG.value)
+    except AttributeError:
+        neng = 4
 
     # Each engine drives a different 8-bit pattern.
     patterns = [0x00, 0xFF, 0xAA, 0x55]
