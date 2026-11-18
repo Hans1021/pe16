@@ -33,7 +33,8 @@ async def four_engines(dut):
              ("ws2812_p3", None)]
     # engine 3: a copy of uart_tx moved to pin 3 (same program text, different pin)
     from test import FW
-    tx3 = open(os.path.join(FW, "uart_tx.pe")).read()
+    with open(os.path.join(FW, "uart_tx.pe")) as f:
+        tx3 = f.read()
     tx3 = tx3.replace("oe 0 1", "oe 3 1").replace("pin 0 ", "pin 3 ").replace("raw 0", "raw 3")
     used = min(neng, 4)
     for e in range(used):

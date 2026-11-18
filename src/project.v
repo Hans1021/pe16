@@ -7,7 +7,7 @@
  */
 `default_nettype none
 `ifdef PE_FLOP_IMEM
-`define PE_NENG_DEFAULT 2   // flip-flop instruction store: 4 engines do not fit the 6x4 die
+`define PE_NENG_DEFAULT 2   // flip-flop instruction store: 4 engines do not fit the 8x4 die
 `else
 `define PE_NENG_DEFAULT 4
 `endif
@@ -57,12 +57,8 @@ module tt_um_pe16 #(parameter NENG = `PE_NENG_DEFAULT) (
   reg [15:0] st_word;
 
   // ---------------- global pin ownership ----------------
-  // Each 2-bit field selects the engine controlling one protocol pin.
-  // pin_owner[2*p +: 2] = engine ID for pin p.
-  // Reset assigns all pins to Engine 0.
-  // ---------------- global pin ownership ----------------
-  // Two owner bits per pin; validity mask controls assignment.
-  // Global reset leaves all protocol pins unassigned.
+  // pin_owner[2*p +: 2] selects the engine controlling pin p.
+  // pin_valid[p] enables its assignment; reset leaves all pins unassigned.
   reg [15:0] pin_owner;
   reg [7:0]  pin_valid;
 

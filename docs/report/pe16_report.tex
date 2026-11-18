@@ -10,6 +10,8 @@
 \usepackage[font=small,labelfont=bf]{caption}
 \usepackage{xcolor}
 \usepackage{listings}
+\usepackage{graphicx}
+\usepackage{placeins}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,fit,calc,shapes.geometric,backgrounds,matrix}
 \usepackage{pgfplots}
@@ -58,19 +60,24 @@
 \title{PE16: A Programmable Protocol Engine for IHP SG13CMOS5L\\[2pt]
 \large Architecture, Firmware, and Verification Report}
 \author{Jane Street Protocol Emulator ASIC Competition entry}
-\date{Tiny Tapeout 6x4 tiles \quad Submission deadline 18 January 2027}
+\date{Tiny Tapeout 8$\times$4 tiles \quad Submission deadline 18 January 2027}
+
+% Figures refer to the screenshots retained in the main repository.
+% Build from docs/report/ so paths resolve to fpga/results/screenshots/.
+\newcommand{\pescreenshot}[3]{%
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.96\linewidth,height=60mm,keepaspectratio]{../../fpga/results/screenshots/#1.png}%
+\caption{#2}\label{#3}
+\end{figure}}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-PE16 is a multi-engine protocol processor built for bit-level pin timing.
-Each engine is a single-issue 16-bit core with a deadline delay instruction, a configurable CRC unit, and a bit-stuffing unit with NRZI and differential line coding.
-Sixteen protocols run as firmware, from UART and I2C to CAN, USB low speed, Modbus RTU, and MIL-STD-1553.
-The instruction set has three executable models: Verilog RTL, a Python reference model, and a Lean~4 model.
-Random differential simulation ties the three together, and eight Lean theorems cover deadline timing and bit stuffing.
-Mutation testing measures how well the checks detect faults at the RTL, model, and firmware levels.
-All results come from simulation, proof, and pre-layout analysis, since the design has not yet been placed, routed, or fabricated.
+PE16 is a four-engine programmable processor for cycle-accurate digital protocol signaling. Each 16-bit engine executes firmware with deadline-relative delays, configurable CRC computation, bit stuffing and destuffing, NRZI, and complementary differential output. Twenty-three firmware programs cover sixteen protocol families, including UART, SPI, I\textsuperscript{2}C, CAN, USB low speed, Modbus RTU, and MIL-STD-1553. Verilog, Python, and Lean~4 implementations of the instruction set are cross-checked through randomized execution, with eight Lean theorems establishing timing and stuffing properties. The expanded cocotb suite passes 36 top-level tests, including post-layout gate-level simulation. An IHP SG13CMOS5L 8$\times$4 Tiny Tapeout implementation with four SRAM macros completes GDS hardening, precheck, and LVS, with positive setup and hold slack at three corners under a 20\,ns clock constraint. A 48\,MHz Basys3 prototype further validates concurrent execution, host configuration, and physical protocol signaling.
+
+%======================================================================
 \end{abstract}
 
 {\normalfill\tableofcontents}
@@ -79,69 +86,70 @@ All results come from simulation, proof, and pre-layout analysis, since the desi
 %======================================================================
 \section{Summary}
 
-Table~\ref{tab:summary} lists the main figures.
-Each figure comes from a check in the repository, and \texttt{VERIFICATION.md} and \texttt{logs/verify.log} hold the raw output of the last full regression.
+PE16 replaces multiple dedicated protocol controllers with four independent, firmware-programmed signaling engines. The hardware supplies the operations most protocols share---precise timing, bit shifting, programmable CRC, stuffing, and line coding---while firmware defines framing, transactions, and control flow. The host SPI interface loads and replaces programs, configures engines, and exchanges data without changing the hardware.
 
-\begin{table}[h]
+Table~\ref{tab:summary} summarizes the completed design and its verification.
+\begin{table}[!htbp]
 \centering\small
-\caption{Design summary.}\label{tab:summary}
+\caption{PE16 implementation summary.}\label{tab:summary}
 \begin{tabularx}{\linewidth}{@{}lL@{}}
 \toprule
-Engines & 4 with SRAM program memory, or 2 with the flip-flop fallback build \\
-Program memory & $256\times16$ IHP SRAM macro per engine, or $128\times16$ flip-flops \\
-System clock & 48\,MHz target, not yet confirmed by post-layout timing \\
-Protocol pins & 8 bidirectional pins \sig{uio[7:0]}, shared by all engines \\
-Host interface & SPI mode~0 on \sig{ui_in[2:0]} and \sig{uo_out[0]} \\
-Firmware & 23 programs covering 16 protocols \\
-Top-level tests & 25, passing in all three builds \\
-Lean theorems & 8, with no \texttt{sorry} and only the standard axioms \\
-Mutation tests & RTL 19 of 20 detected (the survivor is proved equivalent), Lean model 8 of 8, firmware 37 of 37 \\
-Area, 4 engines & 0.142\,mm$^2$ standard cells plus 4 SRAM macros, 0.254\,mm$^2$ in total, 28\% of the die \\
+Engines & Four independent 16-bit engines (two in the flip-flop fallback) \\
+Instruction memory & Four IHP 256$\times$16 SRAM macros; independent per engine \\
+Clock & 48\,MHz nominal; ASIC constrained to 20\,ns (50\,MHz) \\
+Protocol I/O & Eight shared bidirectional pins with programmable ownership and validity \\
+Host interface & SPI mode~0, up to one-eighth of the system clock \\
+Firmware & 23 programs covering 16 protocol families \\
+RTL and gate-level tests & 36 top-level cocotb tests passed \\
+ISA models & Verilog, Python and Lean~4; 200 randomized RTL programs and 500 Lean traces \\
+Formal properties & Eight Lean theorems, no \texttt{sorry} \\
+Mutation tests & 19/20 RTL (one equivalent), 8/8 Lean, 28/37 firmware detected \\
+ASIC area & 0.2212\,mm$^2$ standard cells + 0.1125\,mm$^2$ SRAM \\
+Post-route timing & Worst setup $+6.344$\,ns; worst hold $+0.102$\,ns \\
+Physical verification & Routed DRC 0, LVS 0, all Tiny Tapeout prechecks passed \\
+FPGA & Four engines on Basys3 at 48\,MHz; eight saved WaveForms captures \\
 \bottomrule
 \end{tabularx}
 \end{table}
+
+The ISA and host command definitions are documented in \texttt{docs/isa.md}; the full protocol inventory is in \texttt{docs/protocols.md}, with detailed measured results in \texttt{docs/verification.md}.
 
 %======================================================================
 \section{Challenge constraints}
 
 \paragraph{Process and area.}
-The design targets IHP SG13CMOS5L~\cite{ihp} through Tiny Tapeout~\cite{tt} with a fixed 6x4 tile allocation, as set by the competition~\cite{js}.
-The Tiny Tapeout support tools give this outline as $1289.28\times710.64\,\mu$m, or 0.916\,mm$^2$.
-The competition page quotes about 0.7\,mm$^2$ of nominal tile area and about 1K logic cells per tile.
+PE16 targets IHP SG13CMOS5L~\cite{ihp} through Tiny Tapeout~\cite{tt} for the Jane Street protocol emulator ASIC competition~\cite{js}. The final allocation is 8$\times$4 tiles with a die outline of $1724.16\times710.64\,\mu$m (1.2253\,mm$^2$). Four compiled SRAM macros provide independent program storage without the area overhead of full flip-flop memories.
 
 \paragraph{Pins.}
-The competition page sets no pin count, so the constraint comes from the required Tiny Tapeout template.
-Every design gets the port list in Table~\ref{tab:ports}.
-Only the \sig{uio} pins can be both driven and read with a per-pin output enable.
-Open-drain buses such as I2C and 1-Wire and bidirectional lines such as SWDIO and MDIO need that, so every protocol runs on \sig{uio}.
+The Tiny Tapeout template provides eight dedicated inputs, eight dedicated outputs, and eight bidirectional pins. The SPI host occupies three input bits and one output bit; protocol signals use the eight bidirectional pins. Output ownership is assigned per pin, while all engines may sample the same physical inputs.
 
-\begin{table}[h]
+\begin{table}[!htbp]
 \centering\small
-\caption{Tiny Tapeout port list and its use in PE16.}\label{tab:ports}
+\caption{Tiny Tapeout ports and PE16 assignments.}\label{tab:ports}
 \begin{tabularx}{\linewidth}{@{}llllL@{}}
 \toprule
 Port & Width & Direction & PE16 use & Notes \\
 \midrule
-\sig{ui_in} & 8 & input & bits 0--2: SCK, CS\_N, MOSI & bits 3--7 unused \\
-\sig{uo_out} & 8 & output & bit 0: MISO, bits 1--3: status & bits 4--7 unused \\
+\sig{ui_in} & 8 & input & bits 0--2: SCK, CS\_N, MOSI & bits 3--7 reserved \\
+\sig{uo_out} & 8 & output & bit 0: MISO, bits 1--3: status & bits 4--7 reserved \\
 \sig{uio} & 8 & bidirectional & protocol pins & per-pin output enable \\
 \sig{clk}, \sig{rst_n}, \sig{ena} & 1 each & input & clock, reset, enable & \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\paragraph{I/O speed.}
-Every Tiny Tapeout pin passes through the shared I/O multiplexer of the chip.
-The competition page gives no maximum toggle rate, and this work has not measured one.
-The fastest protocol signals in use are the 3\,MHz SPI, JTAG, and SWD clocks and the 1.5\,Mb/s USB low-speed line.
+Open-drain interfaces such as I\textsuperscript{2}C and 1-Wire release the pin through its output enable; their HIGH state is supplied by an external pull-up. Protocols requiring external physical-layer transceivers use the same engine-side digital interface.
+
+\paragraph{Clocking.}
+The nominal 48\,MHz engine clock gives 32 cycles per USB low-speed bit and provides a convenient timing base for the firmware. The host SPI is synchronized to this clock and supports SCK at most \sig{clk/8}. The ASIC physical flow uses a slightly stricter 20\,ns clock period, while FPGA hardware was operated at 48\,MHz.
 
 %======================================================================
 \section{System architecture}
 
 Figure~\ref{fig:system} shows the top level.
 A host microcontroller loads programs, sets configuration, and moves data through the SPI host port.
-Four engines share the eight protocol pins.
-The top level ORs the pin outputs and output enables of all engines.
+Four engines share eight protocol pins through exclusive output ownership.
+A per-pin ownership mux selects one engine's output and output-enable signals, while a validity mask can leave any pin unassigned.
 Every engine reads every pin through a two-flop synchroniser that removes metastability from the asynchronous inputs.
 
 \begin{figure}[t]
@@ -155,7 +163,7 @@ Every engine reads every pin through a two-flop synchroniser that removes metast
     \node[blk,fill=mem,minimum width=12mm,minimum height=10mm,right=1mm of e\i] (m\i) {SRAM\\\scriptsize$256{\times}16$};
     \draw[arr] (spi.east) -- (e\i.west);
   }
-  \node[blk,fill=pinc,minimum width=16mm,minimum height=52mm,right=10mm of m1.east|-spi] (or) {pin\\combine\\[2pt]\scriptsize OR of\\\scriptsize pout, poe};
+  \node[blk,fill=pinc,minimum width=16mm,minimum height=52mm,right=10mm of m1.east|-spi] (or) {pin owner\\mux\\[2pt]\scriptsize owner +\\\scriptsize valid mask};
   \foreach \i in {0,1,2,3}{\draw[arr] (m\i.east) -- (or.west|-m\i);}
   \node[blk,fill=pinc,right=8mm of or,minimum width=14mm,minimum height=52mm] (pins) {\sig{uio}\\\sig{[7:0]}};
   \draw[arr] (or) -- (pins);
@@ -268,37 +276,41 @@ With \sig{diff} set, \texttt{OUT} also drives pin $i{+}1$ with the complement.
 \section{Top level and program memory}
 
 \subsection{Host command set}
-The command byte is \sig{{engine[1:0], code[5:0]}}, sent MSB first.
-Table~\ref{tab:cmds} lists the commands.
-Configuration register 0 holds the CRC polynomial.
-Register 1 holds \sig{{diff, nrzi, stuff_ones, stuff_n, isr_lsb, osr_lsb, crcw}}.
-The reset value selects a 16-bit CRC, LSB-first shifting in both directions, and no stuffing or line coding.
+The host uses SPI mode~0 with an eight-bit command byte \sig{{engine[1:0],code[5:0]}}, transmitted MSB-first. Bits~7--6 address the engine and bits~5--0 select an operation. Word payloads and readbacks are 16 bits, MSB-first. The port supports live FIFO service while an engine runs; instruction-memory writes are accepted only when the selected engine is stopped.
 
-\begin{table}[h]
+\begin{table}[!htbp]
 \centering\small
-\caption{Host port commands.}\label{tab:cmds}
+\caption{SPI host commands.}\label{tab:cmds}
 \begin{tabularx}{\linewidth}{@{}clL@{}}
 \toprule
-Code & Command & Payload \\
+Code & Command & Payload or response \\
 \midrule
-1 & program write & address byte, then 16-bit words with auto-increment, ignored while the engine runs \\
-2 & configuration write & register byte, 16-bit value \\
-3 & TX push & 16-bit words \\
-4 & RX pop & reads 16-bit words, 0 when empty \\
-5 & status & reads \sig{{pc, run, halt, ov, 00000}} \\
-6 & FIFO counts & reads \sig{{rx_count, tx_count}} \\
-7 & control & one byte: bit 0 run, bit 1 engine reset \\
+1 & program write & address byte, then 16-bit instructions with auto-increment \\
+2 & configuration write & register byte, then 16-bit value \\
+3 & TX push & one or more 16-bit words \\
+4 & RX pop & reads 16-bit words (zero if empty) \\
+5 & status & current PC, RUN, HALT and timing overrun \\
+6 & FIFO counts & RX count in bits 5--3; TX count in bits 2--0 \\
+7 & control & one byte: bit 0 RUN, bit 1 engine reset \\
+8 & owner read & reads the global 16-bit pin-owner register \\
+9 & configuration read & register byte, then 16-bit readback \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
+\subsection{Configuration and pin ownership}
+Per-engine configuration register~0 stores the CRC polynomial. Register~1 selects CRC width, shift directions, stuffing threshold and mode, NRZI, and complementary output. The CRC-width field encodes the width minus one. Register~1 resets to \texttt{0x03F}, selecting a 16-bit CRC, LSB-first shifts, and disabled stuffing and line coding.
+
+Global register~2, written through Engine~0, holds \sig{PIN_OWNER}. For each physical pin $p$, bits $[2p+1:2p]$ identify its driving engine. Global register~3, \sig{PIN_VALID}, enables each assignment independently. With \sig{PIN_VALID[p]} cleared, physical output enable is zero regardless of engine state. When valid, the selected engine's \sig{pout[p]} and \sig{poe[p]} control the output. Every engine receives the synchronized physical input, independent of its output ownership.
+
+For example, writing \texttt{02 02 00 E4} assigns pins~0--3 to Engines~0--3 respectively, and \texttt{02 03 00 0F} enables those four assignments. Command~9 reads either register back; command~8 provides direct owner readback. Global reset clears both routing registers, leaving all protocol outputs high-impedance. Engine-specific resets preserve the global routing configuration.
+
 \subsection{Program memory builds}
-The default build gives each engine an IHP \sig{RM_IHPSG13_1P_256x16} SRAM macro.
-The standard Tiny Tapeout power grid cannot reach the Metal4 power pins of the macro, so this build needs a custom LibreLane power step.
-Another entrant has published such a step.
-The fallback build uses $128\times16$ flip-flops per engine and runs in the standard flow.
-It takes 45\% of the die with two engines, and four engines would take 89\%.
-The largest program has 96 instructions, so every program fits both builds.
+The ASIC build uses four \sig{RM_IHPSG13_1P_256x16_c2_bm_bist} single-port SRAM macros through \texttt{src/pe\_imem.v}. Each macro is read synchronously at the address selected by the engine's next-PC logic and written from the host when the engine is stopped. The wrapper also supports a behavioral 256-word model and a two-engine, 128-word flip-flop fallback.
+
+The final physical configuration explicitly places the four macros and connects their power pins through a customized LibreLane power-distribution step. Macro LEF, Liberty and GDS views, positions, and PDN connections are specified in \texttt{src/config.json}. The full GDS flow completed using the SRAM configuration, making the four-engine build the implemented ASIC design. The Basys3 prototype instead infers four block RAMs with matching synchronous fetch timing.
+
+The original firmware programs contain at most 96 instructions, so each fits within both the SRAM and reduced-memory builds.
 
 %======================================================================
 \section{Instruction set and assembler}
@@ -366,7 +378,7 @@ The receivers check parity the same way.
 \paragraph{Open drain and the scratch pin.}
 For open-drain lines the output value stays 0 and firmware toggles only the output enable.
 Some programs test the next \sig{osr} bit by shifting it onto pin 7 with its output disabled, which sets flag \sig{b} without driving the pin.
-Section~\ref{sec:issues} describes what this means when several engines run at the same time.
+The pin-ownership mux prevents these internal scratch writes from changing an output owned by another engine.
 
 \paragraph{Edge-detection latency.}
 A receiver that starts its bit timer on a detected edge starts it 3 cycles late, because of the two synchroniser flip-flops and the \texttt{WAIT} cycle.
@@ -377,7 +389,7 @@ Section~\ref{sec:uarttol} shows how a bit-rate sweep found this defect.
 \section{Protocols}
 
 Figure~\ref{fig:pinmap} shows the pins used by each program.
-Engines that run at the same time must use separate pins, apart from the scratch pin.
+Output ownership isolates each engine's pin latches; the host assigns distinct outputs for concurrent protocols. Every engine may sample all eight inputs.
 Table~\ref{tab:protocols} lists rate, host interface, test evidence, and limits for every program.
 A reference model in this section means pin-level Python code in the testbench, written from the protocol specification, with no access to engine state.
 
@@ -490,7 +502,7 @@ Protocol tests then check firmware and RTL at the pins through the real host por
   \draw[arr,{Stealth[length=2mm]}-{Stealth[length=2mm]}] (py) -- node[lbl,right]{500 traces\\300{,}000 cycles\\0 mismatches} (lean);
   \draw[arr] (lean) -- node[lbl,below]{proved about} (thm);
   \draw[arr,dashed,gray] (thm) -- node[lbl,left,text=gray]{carries over by\\simulation only} (rtl);
-  \node[blk,fill=pinc,above=8mm of $(rtl)!0.5!(py)$,minimum width=70mm] (proto) {25 protocol tests at the pins, through the host port};
+  \node[blk,fill=pinc,above=8mm of $(rtl)!0.5!(py)$,minimum width=70mm] (proto) {36 top-level tests, through the host port};
   \draw[arr] (proto.south west) ++(8mm,0) -- (rtl.north);
   \node[blk,fill=white,dashed,left=8mm of rtl,minimum width=22mm] (mut) {mutation\\\scriptsize RTL, Lean,\\\scriptsize firmware};
   \draw[arr,dashed] (mut) -- (rtl);
@@ -504,7 +516,7 @@ The testbench in \texttt{test/core} runs 200 random programs of 600 cycles each.
 The RTL engine and the Python model see the same random pins and host FIFO traffic, and all 18 state fields are compared every cycle.
 The configuration is random across CRC width and polynomial, shift directions, stuffing mode and length, NRZI, and differential output.
 Thirty percent of the programs stress the stuffing unit, and branch conditions are drawn uniformly over all 12 encodings.
-The result is 0 mismatches with all 80 functional coverage bins hit.
+The result is 0 mismatches over 120,000 program cycles with all 80 functional coverage bins hit.
 
 \subsection{Lean 4 model and theorems}
 The Lean model in \texttt{lean/Pe16/Isa.lean} implements the same cycle step as the Python model, field for field.
@@ -550,7 +562,7 @@ Level & Detected & Faults \\
 \midrule
 RTL & 19 / 20 & timer flag, CRC alignment, run-length saturation, stuff threshold, \texttt{DLY} compare, CRC feedback, branch conditions, FIFO full, NRZI, differential output, bit reversal, peek, overrun threshold, CRC masking and preset, shift input \\
 Lean model & 8 / 8 & saturation, alignment, \texttt{WAIT}, \texttt{x!=y}, NRZI, differential output, \texttt{due}, reversal \\
-Firmware & 37 / 37 & at least one fault in each of the 23 programs, including faults aimed at timing checks and at every parity and Manchester decoder path \\
+Firmware & 28 / 37 & at least one fault in each of the 23 programs, including faults aimed at timing checks and at every parity and Manchester decoder path \\
 Top level & 2 / 2 & engine select ignored, pin outputs from engine 0 only (injected by hand) \\
 \bottomrule
 \end{tabularx}
@@ -641,9 +653,8 @@ It is not implemented.
 The default test runs include CAN frames at $\pm0.3\%$ and a USB packet at $-0.3\%$, so a loss of margin fails the suite.
 
 \subsection{Protocol tests}
-Twenty-five cocotb tests drive the full top level through the SPI host port.
-They pass in all three builds: 4 engines with the behavioural memory, 4 engines with the IHP SRAM functional model, and 2 engines with the flip-flop store.
-The test \fw{four_engines} runs UART TX, CAN TX, UART RX, and a second UART TX on four engines at once and resets one engine during traffic.
+The expanded cocotb suite contains 36 top-level tests, covering protocol behavior and shared resources through the SPI host port. The original 25-test regression passed with behavioral memory, the IHP SRAM functional model and the two-engine flip-flop store. The 36-test suite passed with the four-engine SRAM RTL build, and all 36 tests passed again in gate-level simulation after ASIC hardening.
+The directed test \fw{four_engines} runs UART TX, CAN TX, UART RX, and a second UART TX on four engines at once and resets one engine during traffic.
 Timing checks against protocol limits cover I2C SCL, MDIO MDC, 1-Wire pulses, WS2812, DMX512, LIN, UART, Modbus silence, the 1553 edge grid, and Ethernet link pulses.
 These checks found two firmware defects, an I2C SCL low time of 1.0\,$\mu$s and a 1-Wire reset of 479.9\,$\mu$s.
 
@@ -656,69 +667,178 @@ Review of suspicious results also found several test-harness errors.
 They include a miscounted word total, fixed waits that became too short at a new clock, and an invalid initial bus state.
 
 %======================================================================
-\section{Synthesis and timing}
+\section{ASIC physical implementation and timing}
 
-Yosys 0.69 with the sg13cmos5l typical library (1.20\,V, 25\,$^\circ$C) gives the areas in Table~\ref{tab:area}, with the SRAM as a black box whose area comes from the macro LEF.
+\subsection{Synthesis and floorplan}
+The default ASIC uses four IHP 256$\times$16 SRAM macros in an SG13CMOS5L 8$\times$4 tile allocation. A preliminary Yosys 0.69 synthesis with black-box SRAM estimated 0.142\,mm$^2$ in standard cells and 0.112\,mm$^2$ in macros. The physical-design flow subsequently placed and routed the four-engine design, added clock and timing-repair cells, and generated the final GDS.
 
-\begin{table}[h]
+Four SRAM macros are positioned explicitly in \texttt{src/config.json}; macro supplies are tied into the configured power network through the project's PDN extension. The 20\,ns clock constraint (50\,MHz) is stricter than the design's nominal 48\,MHz operating target.
+
+\begin{table}[!htbp]
 \centering\small
-\caption{Synthesis results.}\label{tab:area}
+\caption{Final placed-and-routed area and instance statistics.}\label{tab:area}
+\begin{tabularx}{\linewidth}{@{}lL@{}}
+\toprule
+Die outline & $1724.16\times710.64\,\mu$m \\
+Die area & 1.2253\,mm$^2$ \\
+Core area & 1.2082\,mm$^2$ \\
+Standard-cell area & 0.2212\,mm$^2$ \\
+SRAM macro area (four) & 0.1125\,mm$^2$ \\
+Combined cell and macro area & 0.3337\,mm$^2$ \\
+Reported core utilization & 27.62\% \\
+Standard-cell instances & 14,955 \\
+Sequential-cell instances & 1,335 \\
+SRAM instances & 4 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The difference from the pre-layout synthesis estimate includes clock-tree cells, hold and setup repair, and other physical implementation changes. SRAM provides about one-third of the combined cell and macro area and stores all four independently programmable instruction memories.
+
+\subsection{Post-route static timing}
+Multi-corner post-route static timing analysis checks the 20\,ns target at the fast, typical and slow SG13CMOS5L corners. Table~\ref{tab:corners} reports the worst slack for each corner. Total negative slack and the number of setup and hold violations are zero at all three.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Final post-route setup and hold timing (20\,ns clock constraint).}\label{tab:corners}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
-Build & Standard cells & Flip-flops & With SRAM & Share of die \\
+Corner & Voltage & Temp. & Setup slack & Hold slack \\
 \midrule
-4 engines, SRAM & 0.142\,mm$^2$ & 1311 & 0.254\,mm$^2$ & 28\% \\
-2 engines, flip-flops & 0.412\,mm$^2$ & 4819 & n/a & 45\% \\
+Fast & 1.32\,V & $-40^\circ$C & $+12.6413$\,ns & $+0.1025$\,ns \\
+Typical & 1.20\,V & $25^\circ$C & $+10.9540$\,ns & $+0.2800$\,ns \\
+Slow & 1.08\,V & $125^\circ$C & $+6.3437$\,ns & $+0.5968$\,ns \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-OpenSTA analysed the 4-engine netlist at the slow corner (1.08\,V, 125\,$^\circ$C) with a 20.83\,ns period, an ideal clock, and no wire parasitics.
-The worst setup slack is $+11.5$\,ns.
-The fetch loop from SRAM output through decode and next PC back to the SRAM address takes 8.4\,ns plus 0.4\,ns of SRAM setup.
-Hold slack is $-0.30$\,ns into the SRAM address pins, which need 0.77\,ns of hold, so the hold repair of the flow must add delay there.
-Input and output delays were zero, which is optimistic for the I/O multiplexer, and every input passes through a two-flop synchroniser.
-Post-layout timing will be lower, and only the Tiny Tapeout flow can confirm 48\,MHz.
+The original ideal-clock, pre-layout analysis found a hold-sensitive path from the SRAM fetch loop into macro address pins. The final routed design has positive hold slack after clock-tree synthesis and timing repair. With 6.344\,ns worst setup margin under the 50\,MHz constraint, the nominal 48\,MHz operating frequency is supported by the completed static timing analysis.
+
+\subsection{Physical checks and gate-level regression}
+\begin{table}[!htbp]
+\centering\small
+\caption{ASIC implementation and verification results.}\label{tab:asicchecks}
+\begin{tabularx}{\linewidth}{@{}lL@{}}
+\toprule
+GDS hardening & Completed \\
+Detailed-route DRC & 0 errors \\
+Layout-versus-schematic (LVS) & 0 mismatches \\
+Tiny Tapeout precheck & All reported checks passed \\
+Post-layout gate-level cocotb & 36 passed, 0 failed \\
+Layout render & Generated \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The final reports also record 37 maximum-slew and 11 maximum-capacitance violations and 17,712 power-grid violations from an intermediate checker configured not to fail the run on those findings. These results are preserved in the flow logs, alongside the passing DRC, LVS and gate-level regression. The generated GDS, extracted views, and physical reports are available as artifacts of the repository's \texttt{gds.yaml} workflow.
 
 %======================================================================
-\section{Known issues and open items}\label{sec:issues}
+\section{FPGA implementation and hardware testing}
 
-\paragraph{Pin combining.}
-The top level ORs \sig{pout} and \sig{poe} across engines.
-Six programs write pin 7 as a scratch bit with its output disabled: \fw{i2c_ctl}, \fw{mdio}, \fw{onewire}, \fw{ws2812}, \fw{eth_tx}, and \fw{mil1553_tx}.
-If another engine drove pin 7 at the same time, these writes would corrupt its output.
-No current program drives pin 7, so present combinations are safe.
-The fix is to combine \sig{pout & poe} per engine, and it has not been made or tested.
+The same four-engine architecture was implemented on a Digilent Basys3 using inferred block RAM instruction memories and a 48\,MHz clock. An Analog Discovery~3 (AD3) supplied host SPI commands and digital stimulus and captured the resulting waveforms using Digilent WaveForms. Firmware was loaded over SPI rather than compiled into the FPGA bitstream, validating runtime program replacement and the host-controlled configuration path.
 
-\paragraph{Open items.}
-\begin{enumerate}[before=\normalfill]
-\item Choose 4 engines with SRAM and a custom power step, or 2 engines with flip-flops.
-\item Run place and route, post-layout timing, and precheck in the Tiny Tapeout flow.
-\item Close protocol gaps: the Modbus t1.5 check, MIL-STD-1553 bus controller and remote terminal logic, SWD write transactions, and edge-based resynchronisation for the CAN and USB receivers (Section~\ref{sec:tol}).
-Full-rate 10BASE-T also needs a CRC-32 unit, which the 16-bit CRC cannot provide, together with an inner loop about four times faster than the present one.
-\item Route \sig{ui_in[7:3]} and \sig{uo_out[7:4]} to the engines to raise the protocol pin budget from 8 to 17, which needs 4-bit pin indices in \texttt{OUT}, \texttt{IN}, \texttt{WAIT}, and \texttt{SET} instructions.
-\item Measure or obtain the I/O multiplexer speed for this shuttle.
-\end{enumerate}
+\subsection{Vivado implementation}
+\begin{table}[!htbp]
+\centering\small
+\caption{Basys3 resource utilization and post-implementation timing.}\label{tab:fpga}
+\begin{tabularx}{\linewidth}{@{}lL@{}}
+\toprule
+LUTs & 2,597 / 20,800 (12.49\%) \\
+Slice registers & 1,362 / 41,600 (3.27\%) \\
+RAMB18E1 & 4 / 100 (4.00\%) \\
+DSPs & 0 \\
+Worst setup slack & $+7.342$\,ns \\
+Worst hold slack & $+0.063$\,ns \\
+Setup/hold total negative slack & 0\,ns \\
+System clock & 48\,MHz \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Vivado's timing report states that all user-specified timing constraints are met. Full post-implementation reports are in \path{fpga/results/timing_impl.rpt} and \path{fpga/results/utilization_impl.rpt}.
+
+\subsection{Four-engine concurrency}
+Four independently programmed engines produced simultaneous square waves at approximately 6, 12, 24, and 48\,kHz on assigned pins. Measured frequencies were 6.0002, 11.999, 24.001 and 48.000\,kHz, with nearly 50\% duty cycles. This tests concurrent instruction execution, independent timers and memories, and the exclusive pin-routing configuration.
+\pescreenshot{four_engines}{Four independent engines running simultaneously, with WaveForms measurements for all four signals.}{fig:fpga-four}
+
+\FloatBarrier
+\subsection{UART and SPI}
+At 38,400 baud, UART TX generated repeated \texttt{0x55} data with a measured 26.071\,$\mu$s bit period. An externally driven UART RX test returned \texttt{0x55}, \texttt{0xAA}, \texttt{0x00}, and \texttt{0xFF} in the expected FIFO order. The SPI test generated mode-0 transactions near 100\,kHz, transmitting \texttt{0x69}; an external \texttt{0x96} transfer was received as \texttt{0x0096} through the host readback path.
+\pescreenshot{uart_tx}{UART TX at 38,400 baud, decoded as repeated \texttt{0x55} bytes.}{fig:fpga-uart}
+\pescreenshot{spi_tx}{Mode-0 SPI transmission near 100\,kHz, with \texttt{0x69} decoded on MOSI.}{fig:fpga-spi}
+
+\FloatBarrier
+\subsection{I\textsuperscript{2}C and 1-Wire}
+I\textsuperscript{2}C controller firmware generated START, address \texttt{0x50}, acknowledgment phase, and STOP on open-drain SCL and SDA. A second engine acted as an ACK responder; the master observed SDA LOW on the ninth SCL pulse and returned the expected result through its RX FIFO.
+\pescreenshot{i2c_tx}{I\textsuperscript{2}C master address and data timing captured on SCL and SDA.}{fig:fpga-i2c}
+
+The 1-Wire waveform included a reset interval of approximately 481\,$\mu$s, a 6.3\,$\mu$s write-one LOW pulse, a 60\,$\mu$s write-zero LOW pulse and 70\,$\mu$s slots. A second engine provided a slave presence response. The master distinguished the responding and nonresponding cases, returning \texttt{0x0000} and \texttt{0x0001}, respectively.
+\pescreenshot{onewire_tx}{1-Wire reset and write-slot timing, with cursor measurements.}{fig:fpga-onewire}
+
+\FloatBarrier
+\subsection{Manchester, NRZI, and PWM}
+Manchester TX measured a 9.885\,$\mu$s bit period and 4.970\,$\mu$s half-bit interval. Inter-engine RX loopback recovered test frames including \texttt{0x96}. For continuous streaming, backpressure could interrupt the simplified receiver and cause later loss of alignment; individual frame encoding and decoding were confirmed.
+\pescreenshot{manchester_tx}{Manchester-coded output with measured bit and half-bit intervals.}{fig:fpga-manchester}
+
+The NRZI loopback used the engine's built-in encoder and decoder. One engine transmitted \texttt{0xA6}; another returned \texttt{0xA600} through the RX FIFO. This exercises physical pin sampling and serial line decoding.
+
+Two PWM programs used ordinary deadline and pin-control instructions to generate a nominal 12\,kHz waveform with 25\% and 75\% duty settings. Table~\ref{tab:pwm} summarizes the measured frequencies and pulse widths.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Measured FPGA PWM signals.}\label{tab:pwm}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Measurement & 25\% setting & 75\% setting \\
+\midrule
+Frequency & 11.999\,kHz & 12.000\,kHz \\
+Period & 83.340\,$\mu$s & 83.330\,$\mu$s \\
+Duty cycle & 24.982\% & 74.979\% \\
+HIGH interval & 20.820\,$\mu$s & 62.480\,$\mu$s \\
+LOW interval & 62.520\,$\mu$s & 20.850\,$\mu$s \\
+\bottomrule
+\end{tabular}
+\end{table}
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.49\linewidth,keepaspectratio]{../../fpga/results/screenshots/pwm_25.png}\hfill
+\includegraphics[width=0.49\linewidth,keepaspectratio]{../../fpga/results/screenshots/pwm_75.png}
+\caption{FPGA PWM captures: 24.982\% duty cycle (left) and 74.979\% (right), both near 12\,kHz.}
+\label{fig:fpga-pwm}
+\end{figure}
+
+Hardware tests also exercised SPI firmware loading, stop/restart, per-engine reset, TX/RX FIFO transfers, owner/validity-mask configuration and configuration readback. Test scripts and all eight captures are under \texttt{fpga/tests/} and \texttt{fpga/results/screenshots/}, respectively.
+\FloatBarrier
+
+%======================================================================
+\section{Design trade-offs and future work}\label{sec:issues}
+
+The instruction set emphasizes shared signaling mechanisms rather than specialized peripheral controllers. This enables many interfaces with the same four cores, while the maximum rate of a program depends on the instruction count along each bit's critical firmware path. The Manchester Ethernet program, for example, demonstrates framing and link pulses at 2\,Mb/s rather than full 10BASE-T speed.
+
+The synchronization strategy is similarly programmable. Receivers compensate the input synchronizers' detection latency and, where useful, re-anchor timing on known line transitions. Hardware-assisted edge synchronization could extend CAN and USB clock tolerance with less firmware overhead. Higher-level protocol features such as USB enumeration, full CAN arbitration/error recovery, and MIL-STD-1553 terminal scheduling can be implemented in host software or added to firmware over time.
+
+The final output-ownership mux removes the earlier cross-engine pin-combining problem. The shared input network still lets any engine observe a line, while pin assignments can be changed without resynthesizing the design. More protocol pins or deeper buffering would require additional RTL resources, rather than changes to the core instruction model.
 
 %======================================================================
 \section{Reproducing the results}
 
+The following commands are run from the repository root unless noted otherwise.
 \begin{lstlisting}[language={}]
-make -C test                                   # 25 tests, 4 engines
-make -C test SRAM_MODEL=yes PDK_ROOT=<ihp-pdk> # IHP SRAM functional model
-make -C test IMEM=flop                         # 2-engine flip-flop build
-make -C test/core                              # RTL vs Python model
-test/core/mutate.sh                            # 20 RTL mutants
-test/fw_mutate.sh [test-name-prefix]           # 37 firmware mutants
-cd lean && lake build                          # proofs and cross-check tool
+make -C test                                   # expanded cocotb suite
+make -C test SRAM_MODEL=yes PDK_ROOT=<ihp-pdk> # IHP SRAM model
+make -C test IMEM=flop                         # 2-engine fallback
+make -C test/core                              # RTL/Python differential
+# Mutation campaigns:
+test/core/mutate.sh
+test/fw_mutate.sh [test-name-prefix]
+cd lean && lake build                          # Lean model and proofs
 python3 gen_traces.py 500 600 | .lake/build/bin/crosscheck
-./run_regression.sh                            # everything, logs/verify.log
+./run_regression.sh                            # historical complete regression
 \end{lstlisting}
 
-The tools are Icarus Verilog 12, cocotb 2.0.1, Lean 4.15.0, Yosys 0.69, OpenSTA through the PyPI \texttt{openroad} package, and the \texttt{dev} branch of IHP-Open-PDK.
-The scripts \texttt{run\_regression.sh} and \texttt{synth/sta.py} hold paths from the development machine and need editing before use.
+The ASIC build, Tiny Tapeout precheck, gate-level simulation and layout render run through the GitHub Actions workflow \texttt{.github/workflows/gds.yaml}. Their outputs are retained as workflow artifacts. FPGA build inputs and host test scripts are in \texttt{fpga/basys3/} and \texttt{fpga/tests/}, while the reports and screenshots are in \texttt{fpga/results/}. Full methodology and measurement context are provided in \texttt{docs/verification.md}.
 
-
+%======================================================================
 \section*{References}
 \addcontentsline{toc}{section}{References}
 \small

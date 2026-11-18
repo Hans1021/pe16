@@ -10,7 +10,23 @@ module pe_imem (
   input  wire [15:0] wdata,
   output wire [15:0] rdata
 );
-`ifdef PE_FLOP_IMEM
+
+`ifdef PE_FPGA_BRAM_IMEM
+  // FPGA-only 256x16 synchronous instruction BRAM.
+  // Write-through behavior matches the ASIC SRAM interface.
+  (* ram_style = "block" *) reg [15:0] m [0:255];
+  reg [15:0] q;
+
+  always @(posedge clk) begin
+    if (we)
+      m[addr] <= wdata;
+
+    q <= we ? wdata : m[addr];
+  end
+
+  assign rdata = q;
+
+`elsif PE_FLOP_IMEM
   // Standard-cell fallback when the SRAM macro cannot be powered in the TT flow.
   // 128 words; address bit 7 is ignored (programs must fit in 128 words).
   reg [15:0] m [0:127];
