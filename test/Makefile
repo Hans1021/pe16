@@ -6,7 +6,7 @@ SIM ?= icarus
 FST ?= -fst # Use more efficient FST format
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
-PROJECT_SOURCES = project.v pe_core.v pe_imem.v
+PROJECT_SOURCES = project.v pe_core.v pe_imem.v sram_256x16_bb.v
 
 ifneq ($(GATES),yes)
 
@@ -17,9 +17,10 @@ ifeq ($(IMEM),flop)
 COMPILE_ARGS    += -DPE_FLOP_IMEM
 else ifeq ($(SRAM_MODEL),yes)
 # IHP 256x16 SRAM functional model (needs PDK_ROOT)
-COMPILE_ARGS    += -DFUNCTIONAL
-VERILOG_SOURCES += $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_sram/verilog/RM_IHPSG13_1P_256x16_c2_bm_bist.v
-VERILOG_SOURCES += $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_sram/verilog/RM_IHPSG13_1P_core_behavioral_bm_bist.v
+COMPILE_ARGS += -DFUNCTIONAL -DSIM
+
+VERILOG_SOURCES += $(PWD)/sram_model/RM_IHPSG13_1P_256x16_c2_bm_bist.v
+VERILOG_SOURCES += $(PWD)/sram_model/RM_IHPSG13_1P_core_behavioral_bm_bist.v
 else
 COMPILE_ARGS    += -DPE_BEHAV_IMEM
 endif

@@ -1,3 +1,13 @@
+# LibreLane 3.1.0.dev4's scripts/openroad/common/pdn_cfg.tcl sans the
+# per-macro grid ("macro"). On the IHP SG13CMOS5L tile the PDN is a single
+# layer of vertical Metal4 stripes, the same layer as the SRAM's power pins,
+# so pdngen cannot connect the macro by itself: the macro grid would have no
+# shapes, and OpenROAD fails with PDN-0232 / PDN-0233. The SRAM is powered by
+# the Project.ExtendPowerStripes step (librelane_plugin_sram_pdn.py) instead,
+# which runs after OpenROAD.GeneratePDN.
+#
+# ---
+#
 # Copyright 2025 LibreLane Contributors
 #
 # Adapted from OpenLane
@@ -139,6 +149,7 @@ if { $::env(PDN_CORE_RING) == 1 } {
         append_if_flag arg_list PDN_CORE_RING_ALLOW_OUT_OF_DIE -allow_out_of_die
         append_if_flag arg_list PDN_CORE_RING_CONNECT_TO_PADS -connect_to_pads
         append_if_equals arg_list PDN_EXTEND_TO "boundary" -extend_to_boundary
+        append_if_exists_argument arg_list PDN_CORE_RING_CONNECT_TO_PAD_LAYERS -connect_to_pad_layers
 
         set pdn_core_vertical_layer $::env(PDN_VERTICAL_LAYER)
         set pdn_core_horizontal_layer $::env(PDN_HORIZONTAL_LAYER)
@@ -181,36 +192,3 @@ if { $::env(PDN_CORE_RING) == 1 } {
         throw APPLICATION "PDN_CORE_RING cannot be used when PDN_MULTILAYER is set to false."
     }
 }
-
-define_pdn_grid \
-    -macro \
-    -default \
-    -name macro \
-    -starts_with POWER \
-    -halo "$::env(PDN_HORIZONTAL_HALO) $::env(PDN_VERTICAL_HALO)"
-
-# SRAM power pins are vertical Metal4 shapes.
-# Add horizontal Metal5 straps across each SRAM so the Metal4 pins
-# can be promoted to the Tiny Tapeout TopMetal1 grid.
-#
-# Two P/G pairs are used so VPWR reaches both physical power regions:
-#   VDD!      : lower portion of macro
-#   VDDARRAY! : upper portion of macro
-add_pdn_stripe \
-    -grid macro \
-    -layer Metal5 \
-    -width 1.0 \
-    -spacing 10.0 \
-    -pitch 50.0 \
-    -offset 20.0 \
-    -number_of_straps 2 \
-    -starts_with POWER \
-    -snap_to_grid
-
-add_pdn_connect \
-    -grid macro \
-    -layers "Metal4 Metal5"
-
-add_pdn_connect \
-    -grid macro \
-    -layers "Metal5 $::env(PDN_VERTICAL_LAYER)"

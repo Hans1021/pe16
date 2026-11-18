@@ -1,5 +1,5 @@
 // Instruction store: logical 256x16 synchronous-read RAM.
-// Synthesis/GL: 256x48 IHP SRAM macro, using bits [15:0].
+// Synthesis/GL: 256x16 IHP SRAM macro, using bits [15:0].
 // RTL simulation without the PDK: behavioural model with matching read timing
 // (data valid the cycle after the address is presented).
 `default_nettype none
@@ -29,18 +29,18 @@ module pe_imem (
   end
   assign rdata = q;
 `else
-  wire [47:0] sram_dout;
+  wire [15:0] sram_dout;
 
-  RM_IHPSG13_1P_256x48_c2_bm_bist u_sram (
+  RM_IHPSG13_1P_256x16_c2_bm_bist u_sram (
     .A_CLK      (clk),
     .A_MEN      (1'b1),
     .A_WEN      (we),
     .A_REN      (1'b1),
     .A_ADDR     (addr),
-    .A_DIN      ({32'b0, wdata}),
+    .A_DIN      (wdata),
     .A_DLY      (1'b1),
     .A_DOUT     (sram_dout),
-    .A_BM       ({32'b0, 16'hFFFF}),
+    .A_BM       (16'hFFFF),
 
     .A_BIST_CLK (1'b0),
     .A_BIST_EN  (1'b0),
@@ -48,8 +48,8 @@ module pe_imem (
     .A_BIST_WEN (1'b0),
     .A_BIST_REN (1'b0),
     .A_BIST_ADDR(8'd0),
-    .A_BIST_DIN (48'd0),
-    .A_BIST_BM  (48'd0)
+    .A_BIST_DIN (16'd0),
+    .A_BIST_BM  (16'd0)
   );
 
   assign rdata = sram_dout[15:0];
